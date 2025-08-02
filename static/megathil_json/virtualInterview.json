@@ -1,0 +1,1506 @@
+{
+    "code": 200,
+    "messageCode": 1001,
+    "data": {
+        "moduleId": "6592008029c8c3e4dc76256c",
+        "unitId": "507f191e810c19729de860ea",
+        "moduleName": "Virtual Interviews",
+        "bgColor": "#FFFFFF",
+        "imageUrl": "00000020f51bb4362eee2a4d",
+        "status": "active",
+        "completedPercentage": 0,
+        "displayOrder": 1,
+        "allgender": [
+            {
+                "moduleName": "All About Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 0,
+                "imageUrl": "dads",
+                "questionType": "INSTRUCTIONS",
+                "templateType": "allAboutInstruction",
+                "quetionTitle": "",
+                "hintText": "This helps in opening up the conversation and shows you are polite and professional too! The interviewer may even have a positive impression on you as you appear confident and well-prepared for the interview.",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Interviewer",
+                        "optionText": "Hello Thendral, How are you?",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Candidate",
+                        "optionText": "Hello mam/sir, I am fine, How are you? ",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 1,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "Test the Device and Technology",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "It is recommended to take the interview on your laptops/desktops to avoid any disturbance",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtech1.png",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "If you have no choice but to take the interview on your mobile phones, put your phone on Do not Disturb mode or the mode which will avoid calls or messages interrupting and distracting you during your interview process",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtech2.png",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "If the organisation has suggested specific software, familiarise yourself with the software",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtech3.png",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ensure the microphone and speakers are working and that the internet connection supports high-quality live video by making or receiving a test call from a friend or family member, preferably in the same platform to practice using the software",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtech4.png",
+                        "validOption": false,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Use a professional screen name that interviewers can easily recognise, not fancy names that you use for your Instagram or snapchat!",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtech5.png",
+                        "validOption": false,
+                        "displayOrder": 5
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 2,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "Practice",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Practice your interview technique on camera. Ask a friend or family member to give you feedback on the location, quality of video and lightings",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivpr1.png",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Let them ask you a few of the interview questions you are prepared with over the video call. Practice responding to questions naturally and letting the interviewer finish before speaking",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivpr2.png",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Practice listening carefully, speaking carefully and leaving the call after they finish since you may experience slight delay in video calls",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivpr3.png",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "The more you practice, the more confident you will be for the actual call",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivpr4.png",
+                        "validOption": false,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "The best tip is for you to thoroughly prepare for the first question which is the typical question in any interview - “Tell me about yourself”. Practice the response for this question so you have a very good start.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivpr5.png",
+                        "validOption": false,
+                        "displayOrder": 5
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 3,
+                "imageUrl": "dads",
+                "questionType": "QUESTION",
+                "templateType": "chatInstruction",
+                "quetionTitle": "Sometimes the interviewer may not necessarily start with ‘tell me about yourself’. How to start the interview then?",
+                "hintText": "This is how you redirect your question to the answer you are already prepared with, so you can build a good first impression with your interviewer",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Interviewer",
+                        "optionText": "So Thendral, I have looked at your profile and see that you are interested in playing football. So, tell me why this job is important for you and you are not looking at a career in sports?",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Candidate",
+                        "optionText": "Thank you mam for the question! Definitely my passion is to play football, however to build a career in sports is not what I am looking at. I would definitely want to build my career in the field of xxx and shine. Let me first tell you about myself… (and talk about the answer you already prepared and practiced)",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 4,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "Your Location",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Be mindful of choosing a quiet room with minimal background noise and no distractions.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/iyloc1.png",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Adequate lighting is a must, preferably natural. The light should fall on your face and should not be behind you as it ensures showing your face clearly to the interviewer",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/iyloc2.png",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Try your best to chose a white wall behind so that no one is walking around behind you",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/iyloc3.png",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Inform people at home to avoid making noise as this is an interview to decide your future",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/iyloc4.png",
+                        "validOption": false,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Wear appropriate clothing and light colours to make you look professional.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/iyloc5.png",
+                        "validOption": false,
+                        "displayOrder": 5
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 5,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "Take Notes",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "The best way to take notes during an interview is with a notebook and pen and not on your computer. Do not type anything on the computer during the interview process as the interviewer might think you are searching the internet for responses",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtnotes1.png",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Alert your interviewer that you are taking notes as they should not think you are disinterested",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtnotes2.png",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Do not write too much on the notebook. The best thing to do would be to use your notebook to make notes twice or thrice at best during the interview process as it gives the impression that you are attentive and at the same time taking notes of critical inputs. Like for ex. If you ask the interviewer how many employees are there in the organisation or what are the different industries the organisation is venturing into, these are questions for which you can write down the answers for your future reference.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivtnotes3.png",
+                        "validOption": false,
+                        "displayOrder": 3
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 6,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "On the interview Day!",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Its best to be fully ready 30-45 minutes before the interview and login atleast 10 minutes before your interview.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivday1.png",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Do all the technology checks, internet connectivity and backup, lightings and a gentle nudge to your family to not cause any disturbance.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivday2.png",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Opening your online platform a few minutes before the interview shows professional courtesy as well as gives you to fix any last minute issues",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivday3.png",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Wear clean professional attire as this will also help you focus and give you confidence.",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivday4.png",
+                        "validOption": false,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Take care of the hair and groom yourself well enough so you appear your professional best on camera!",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivday5.png",
+                        "validOption": false,
+                        "displayOrder": 5
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 9,
+                "completedInstruction": 7,
+                "questionId": "6592008029c8c3e4dc76tgy5",
+                "moduleId": "6592008029c8c3e4dc76256c",
+                "questionType": "INSTRUCTIONS",
+                "templateType": "doView",
+                "quetionTitle": "DO’S",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "hintText": "",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc769871",
+                        "optionValue": "Connectivity Check",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos1.png",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769872",
+                        "optionValue": "Consider wearing earbuds to reduce noise and distractionst",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos2.png",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Have backups in case technology challenges come up",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos3.png",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Quiet and well-lit environment",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos4.png",
+                        "validOption": true,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Dress professionally",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos5.png",
+                        "validOption": true,
+                        "displayOrder": 5
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Maintain eye contact",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos6.png",
+                        "validOption": true,
+                        "displayOrder": 6
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Practice good body language",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos7.png",
+                        "validOption": true,
+                        "displayOrder": 7
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Prepare your environment",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos8.png",
+                        "validOption": true,
+                        "displayOrder": 8
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Practice active listening",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos9.png",
+                        "validOption": true,
+                        "displayOrder": 9
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "Speak clearly and confidently",
+                        "optionText": "",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdos10.png",
+                        "validOption": true,
+                        "displayOrder": 10
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "questionId": "6592008029c8c3e4dc76tgy5",
+                "totalInstruction": 9,
+                "completedInstruction": 8,
+                "moduleId": "6592008029c8c3e4dc76256c",
+                "questionType": "INSTRUCTIONS",
+                "templateType": "dontView",
+                "quetionTitle": "DON’TS",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "hintText": "",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc769871",
+                        "optionValue": "",
+                        "optionText": " Don’t multitask",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont1.png",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769872",
+                        "optionValue": "",
+                        "optionText": "Don’t forget to mute notifications",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont2.png",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t rely solely on notes",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont3.png",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t Neglect your appearance",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont4.png",
+                        "validOption": true,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t rush through your answers",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont5.png",
+                        "validOption": true,
+                        "displayOrder": 5
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t interrupt interviewer",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont6.png",
+                        "validOption": true,
+                        "displayOrder": 6
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t forget about non-verbal cues",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont7.png",
+                        "validOption": true,
+                        "displayOrder": 7
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t use inappropriate background",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont8.png",
+                        "validOption": true,
+                        "displayOrder": 8
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc769873",
+                        "optionValue": "",
+                        "optionText": "Don’t be late",
+                        "optionImage": "${IMAGE_URL}/masserts/module3/ivdont9.png",
+                        "validOption": true,
+                        "displayOrder": 9
+                    }
+                ]
+            },
+            {
+                "moduleName": "Dress To Impress",
+                "totalInstruction": 1,
+                "completedInstruction": 0,
+                "imageUrl": "dads",
+                "questionType": "RESULT",
+                "templateType": "practiceCongrats",
+                "quetionTitle": "Module 3 ",
+                "hintImage": "",
+                "displayOrder": 5,
+                "hasMultiAnswers": false,
+                "option": []
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 1,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What is the recommended device to use for virtual interviews to minimize disturbances?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 1,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": " Tablet",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Laptop",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Desktop",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Mobile Phone",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Smart Watch",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 5
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 2,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "Why is it important to put your mobile phone on “Do not Disturb” mode during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To conserve battery",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To prevent interruptions and distractions",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To enable faster internet speed",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To improve video quality",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 3,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "Which of the following is a recommended step to ensure high-quality video and audio during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 3,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Using a dimly lit room",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ensuring the microphone is muted",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Making a test call to check connectivity",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Using background music for ambiance",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 4,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What is the purpose of practicing your interview technique on camera before a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 4,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To test the interview platform",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To evaluate internet speed",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To assess lighting quality",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To rehearse responses and assess presentation",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 5,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "During a virtual interview, what is the best way to handle interruptions or distractions?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 5,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ignore them and continue speaking",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Politely acknowledge and address them",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Mute the microphone until they stop",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "End the interview immediately",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 6,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "Which of the following clothing choices is most appropriate for a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 6,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Casual t-shirt and jeans",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Business suit",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Pyjamas",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Workout attire",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 7,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What should you do if the interviewer mentions something from your resume or profile at the beginning of the interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 7,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Politely correct any inaccuracies",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Express gratitude and provide additional information if necessary",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ignore the mention and proceed with prepared answers",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ask the interviewer to skip that topic",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 8,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What is the best way to take notes during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 8,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Type on the computer to keep up with the conversation",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Use a notebook and pen to jot down key points",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Record the interview for playback later",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ask the interviewer to repeat important information",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 9,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What should you do if you experience technical difficulties during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 9,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Panic and end the interview immediately",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Politely inform the interviewer and attempt to troubleshoot",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Blame the interviewer for the issues",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ignore the difficulties and continue with the interview",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 10,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "How early should you log in to a virtual interview platform before the scheduled interview time?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 10,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "5 minutes",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "15 minutes",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "30 minutes",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "1 hour",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 11,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "Which of the following actions should you take to maintain eye contact during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 11,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Stare directly into the camera at all times",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Look at your own video feed to ensure you appear presentable",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Glance occasionally at the interviewer’s video feed",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Close your eyes to avoid distractions",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 12,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What is the appropriate distance between yourself and the camera during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 12,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "2-3 feet",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "5-6 feet",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "8-10 feet",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "It doesn’t matter",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 13,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "If you need to reference notes during a virtual interview, what is the best way to do so?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 13,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Hold the notes up to the camera for the interviewer to see",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Glance at the notes discreetly while speaking",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Read directly from the notes without making eye contact",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Memorize all information beforehand to avoid using notes",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 14,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What is the recommended way to end a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 14,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Abruptly close the video call",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Thank the interviewer for their time and express interest in the position",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ask the interviewer for feedback on your performance",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Quickly disconnect without saying anything",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 15,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "During a virtual interview, if you experience a lag in the video or audio, what should you do?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 15,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Shout to ensure the interviewer can hear you clearly",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ignore the lag and continue speaking as usual",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Politely pause and wait for the issue to resolve",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "End the interview immediately and try again later",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 16,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "How should you handle nervousness or anxiety before a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 16,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Drink Caffeinated beverages to stay alert",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Practice deep breathing exercises to relax",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Avoid preparing beforehand to minimize stress",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Focus on negative thoughts to mentally prepare for rejection",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 17,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "If you accidentally interrupt the interviewer during a virtual interview, what should you do?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 17,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Apologise and wait for the interviewer to continue speaking",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Continue talking over the interviewer to make your point",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ignore the interruption and proceed with your answer",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "End the interview due to embarrassment",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 18,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "What is the purpose of sending a follow-up email after a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 18,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To apologize for any mistakes made during the interview",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To express gratitude for the opportunity and reiterate interest in the position",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To demand immediate feedback on your performance",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "To criticize the interviewer’s conduct during the interview",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 19,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "Which of the following is NOT a recommended action to take during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 19,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Maintain a good posture and body language",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Keep a relaxed and friendly tone of voice",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Use slang and informal language to appear more approachable",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Listen attentively and respond thoughtfully to questions",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 20,
+                "completedInstruction": 20,
+                "imageUrl": "",
+                "questionType": "QUESTION",
+                "templateType": "qnWithSelection",
+                "quetionTitle": "How can you demonstrate enthusiasm and interest in the position during a virtual interview?",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 20,
+                "hasMultiAnswers": false,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Speak in a montone voice to maintain professionalist",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Avoid making eye contact to prevent appearing too eager",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Ask insightful questions about the company and role",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Show disinterest by keeping responses brief and vague",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Dress To Impress",
+                "totalInstruction": 1,
+                "completedInstruction": 0,
+                "imageUrl": "dads",
+                "questionType": "RESULT",
+                "templateType": "results",
+                "quetionTitle": "Module 3 ",
+                "hintImage": "",
+                "displayOrder": 5,
+                "hasMultiAnswers": false,
+                "option": []
+            },
+            {
+                "moduleName": "Dress To Impress",
+                "totalInstruction": 1,
+                "completedInstruction": 0,
+                "imageUrl": "dads",
+                "questionType": "RESULT",
+                "templateType": "moduleListing",
+                "quetionTitle": "",
+                "hintImage": "",
+                "displayOrder": 5,
+                "hasMultiAnswers": false,
+                "option": []
+            }
+        ]
+    }
+}

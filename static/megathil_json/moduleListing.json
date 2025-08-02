@@ -1,0 +1,54 @@
+{
+    "code": 200,
+    "messageCode": 1001,
+    "data": {
+        "title": "Interview Readiness",
+        "gemPoints": "200",
+        "modules": [
+            {
+                "imgUrl": "${IMAGE_URL}/masserts/module/imgM1.png",
+                "bgColor": [
+                    "88D8DF",
+                    "52A8F1"
+                ],
+                "title": "What to expect in interview",
+                "subTitle": "Module 01",
+                "progressPercentage": "10",
+                "tmpltName": "moduleInstruction"
+            },
+            {
+                "imgUrl": "${IMAGE_URL}/masserts/module/imgM2.png",
+                "bgColor": [
+                    "F1889E",
+                    "E84064"
+                ],
+                "title": "Dress to Impress",
+                "subTitle": "Module 02",
+                "progressPercentage": "0",
+                "tmpltName": "genderSelection"
+            },
+            {
+                "imgUrl": "${IMAGE_URL}/masserts/module/imgM3.png",
+                "bgColor": [
+                    "88D8DF",
+                    "52A8F1"
+                ],
+                "title": "Virtual Interviews",
+                "subTitle": "Module 03",
+                "progressPercentage": "0",
+                "tmpltName": "genderSelection"
+            },
+            {
+                "imgUrl": "${IMAGE_URL}/masserts/module/imgM4.png",
+                "bgColor": [
+                    "88D8DF",
+                    "52A8F1"
+                ],
+                "title": "Tell me about yourself",
+                "subTitle": "Module 04",
+                "progressPercentage": "0",
+                "tmpltName": "chooseVideoAudio"
+            }
+        ]
+    }
+}

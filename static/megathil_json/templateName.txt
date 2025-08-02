@@ -1,0 +1,22 @@
+
+  Gender screen =  "genderSelection"
+   qnWithSelection = "qnWithSelection";
+   results = "results";
+   resultWithPoints = "resultWithPoints";
+   qnDragDrop = "qnDragDrop";
+   videoRecording = "videoRecording";
+   practiceCongrats = "practiceCongrats";
+   updateGems = "updateGems";
+   profile = "profile";
+   doView = "doView";
+   dontView = "dontView";
+   settings = "settings";
+   mainModule = "mainModule";
+   onBoard = "onBoard";
+   dashBoard = "dashBoard";
+   moduleListing = "moduleListing";
+   moduleInstruction = "moduleInstruction";
+   qnWithInstruction = "qnWithInstruction";
+   highLightInstruction = "highLightInstruction";
+   chatInstruction = "chatInstruction";
+   allAboutInstruction = "allAboutInstruction";

@@ -1,0 +1,27 @@
+{
+    "code": 200,
+    "messageCode": 1001,
+    "data": {
+        "color": {
+            "primaryColor": [
+                "065F85"
+            ],
+            "secondaryColor": [
+                "2EE220",
+                "03BD2C"
+            ],
+            "primaryTextColor": [
+                "252525"
+            ],
+            "secondaryTextColor": [
+                "747474"
+            ]
+        },
+        "bottomIcons": [
+            "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/bottomIcons%2Fhome.png?alt=media&token=18aa0120-d0a1-4365-a53f-9dae0fdb0a5b",
+            "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/bottomIcons%2Fcompass.png?alt=media&token=daca71a5-1d5f-45bb-b7ce-edb14cb69602",
+            "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/bottomIcons%2Fteam.png?alt=media&token=6d3984ad-2383-4acd-b026-06d8abb7430e",
+            "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/bottomIcons%2Fprofile.png?alt=media&token=078e5a49-0e4a-4be1-aa86-2d9dc9ea0e67"
+        ]
+    }
+}

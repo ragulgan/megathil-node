@@ -1,0 +1,187 @@
+{
+    "code": 200,
+    "messageCode": 1001,
+    "data": {
+        "moduleId": "6592008029c8c3e4dc76256c",
+        "unitId": "507f191e810c19729de860ea",
+        "moduleName": "Introducing yourself",
+        "bgColor": "#FFFFFF",
+        "imageUrl": "00000020f51bb4362eee2a4d",
+        "status": "active",
+        "completedPercentage": 0,
+        "displayOrder": 1,
+        "allgender": [
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 3,
+                "completedInstruction": 1,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "Introducing yourself in an interview",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Start with a polite greeting",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Share your full name and educational background",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Briefly give a view on your career aspirations",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Express gratitude for the opportunity",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    }
+                ]
+            },
+            {
+                "moduleName": "Introducing yourself",
+                "totalInstruction": 3,
+                "completedInstruction": 0,
+                "imageUrl": "dads",
+                "questionType": "INSTRUCTIONS",
+                "templateType": "allAboutInstruction",
+                "quetionTitle": "Lets look at some examples of responses you could use",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Candidate",
+                        "optionText": "Hi, I'm [Your Name]. I recently graduated with a degree in [Your Field] from [University Name], where I gained hands-on experience through internships in [relevant field]. I'm excited to kickstart my career and apply my skills to [specific industry or role].",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Interviewer",
+                        "optionText": "Hello, I'm [Your Name], a recent graduate from [University Name] with a degree in [Your Field]. During my studies, I gained practical experience through internships in [relevant area], and I'm now excited to apply my knowledge and skills in a professional setting.",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Candidate",
+                        "optionText": "I'm [Your Name], a recent graduate with a passion for [specific field or industry], eager to contribute my skills and learn from experienced professionals.\" In my free time, I compose poetry or paint, which shows that I am an artistic person who can also manage free time efficiently!",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "Candidate",
+                        "optionText": "A good self-introduction example is when you tell people about yourself in a clear and friendly way.\n You can mention your name, where you're from, what you do, and some things you like.",
+                        "optionImage": "",
+                        "validOption": true,
+                        "displayOrder": 2
+                    }
+                ]
+            },
+            {
+                "moduleName": "Virtual Interviews",
+                "totalInstruction": 3,
+                "completedInstruction": 2,
+                "questionType": "INSTRUCTIONS",
+                "templateType": "highLightInstruction",
+                "quetionTitle": "Let’s look at an example of a detailed introduction",
+                "hintText": "",
+                "hintImage": "",
+                "displayOrder": 2,
+                "hasMultiAnswers": true,
+                "imageUrl": "dads",
+                "option": [
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "Hi, I am Shakeel. I am from Delhi. I completed my English Honors from Hindu College which is affiliated to Delhi University. I completed my twelfth grade from Delhi Public School with 89% from CBSE Boards.",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 1
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "My family includes my father who is an engineer, my mother who is a lawyer and my brother who is pursuing his MS in Computer Science from Cornell University. I love playing chess and have represented my school in various district and state level chess competitions.",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 2
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "I am also a part of Rotary Club where I have participated in community service at various schools teaching the underprivileged and visiting a number of old age homes. Being part of the Rotary Club has given me a different perspective of life which makes me appreciate what I am and where I am.”",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 3
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "I am a passionate and dedicated individual who recently completed a degree in Electrical Engineering. During my studies, I focused on subjects like circuit design, power systems, and electronics.",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 4
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "I also had the opportunity to work on hands-on projects, including designing and implementing a small-scale power distribution system. I am fascinated by the possibilities of renewable energy and its impact on sustainability.",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 5
+                    },
+                    {
+                        "optionId": "6592008029c8c3e4dc76jhgt",
+                        "optionValue": "",
+                        "optionText": "I am eager to apply my technical skills and contribute to the development of innovative solutions in the field. I am a team player, detail-oriented, and open to learning from experienced professionals to further enhance my knowledge and expertise.",
+                        "optionImage": "",
+                        "validOption": false,
+                        "displayOrder": 6
+                    }
+                ]
+            },
+            {
+                "moduleName": "Introducing yourself",
+                "totalInstruction": 1,
+                "completedInstruction": 0,
+                "imageUrl": "${IMAGE_URL}/privacy-policy.html",
+                "questionType": "PRIVACY",
+                "templateType": "webView",
+                "quetionTitle": "",
+                "hintImage": "",
+                "hintText": "By submitting your audio/video, you're giving us permission to use it for these analyses within the Megathil app. Don't worry, your personal info stays safe and won't be shared.",
+                "displayOrder": 5,
+                "hasMultiAnswers": false,
+                "option": []
+            }
+        ]
+    }
+}

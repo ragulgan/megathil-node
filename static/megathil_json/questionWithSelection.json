@@ -1,0 +1,42 @@
+{
+    "code": 200,
+    "messageCode": 1002,
+    "data": {
+        "qnId": "02",
+        "tmplt": "qnWithSelection",
+        "isSingleSelect": false,
+        "title": "Dress to impress",
+        "qnList": [
+            {
+                "text": "Your judgement on choice of attire",
+                "bgColor": "FFFFFF",
+                "borderColor": "D9D9D9",
+                "imageUrl": ""
+            },
+            {
+                "text": "Clothing that shows professionalism",
+                "bgColor": "FFFFFF",
+                "borderColor": "D9D9D9",
+                "imageUrl": ""
+            },
+            {
+                "text": "Confidence Wearing anything that you like",
+                "bgColor": "FFFFFF",
+                "borderColor": "D9D9D9",
+                "imageUrl": ""
+            },
+            {
+                "text": "Wearing anything that you like",
+                "bgColor": "FFFFFF",
+                "borderColor": "D9D9D9",
+                "imageUrl": ""
+            },
+            {
+                "text": "Respect for the interviewer and company",
+                "bgColor": "FFFFFF",
+                "borderColor": "D9D9D9",
+                "imageUrl": ""
+            }
+        ]
+    }
+}

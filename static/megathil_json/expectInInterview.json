@@ -1,0 +1,57 @@
+{
+    "code": 200,
+    "messageCode": 1001,
+    "data": {
+        "moduleId": "6592008029c8c3e4dc76256c",
+        "unitId": "507f191e810c19729de860ea",
+        "moduleName": "What to expect in Interviews",
+        "bgColor": "#566734",
+        "imageUrl": "00000020f51bb4362eee2a4d",
+        "status": "active",
+        "completedPercentage": 67,
+        "moduleType": "QUESION_ANSWER",
+        "templateType": "moduleInstruction",
+        "displayOrder": 1,
+        "instructionQn": [
+            {
+                "templateType": "moduleInstruction",
+                "moduleName": "What to expect in Interviews?",
+                "totalInstruction": 3,
+                "completedInstruction": 2,
+                "imageUrl": "${IMAGE_URL}/masserts/module1/imgins1.png",
+                "tips": "Interviewers aim for specific selection targets in campus interviews. Knowing these targets helps ",
+                "option": [
+                    "Day 1 slot is the most preferred slot by top organizations in the market as this helps in identifying best talent for their companies.",
+                    "Do not worry if you aren’t selected in your first interview process.",
+                    "Understand that this is your first interview and your first milestone as you step into the corporate community."
+                ]
+            },
+            {
+                "templateType": "moduleInstruction",
+                "moduleName": "What to expect in Interviews?",
+                "totalInstruction": 3,
+                "completedInstruction": 2,
+                "imageUrl": "${IMAGE_URL}/masserts/module1/imgins2.png",
+                "tips": "Interviewers aim for specific selection targets in campus interviews. Knowing these targets helps ",
+                "option": [
+                    "Interviewers who visit colleges to take campus interviews have one main goal in mind.",
+                    "They have a defined set target in terms of number of selections from that particular college and stick to + or – 10% of the target as selects. Hence, it is very important to know the target of the respective companies that participate in the selection process.",
+                    "Your placement coordinator can tell you what the number is that the organization has in mind so it will be helpful for you to plan accordingly and chose the organizations to attend the interviews."
+                ]
+            },
+            {
+                "templateType": "moduleListing",
+                "moduleName": "What to expect in Interviews?",
+                "totalInstruction": 3,
+                "completedInstruction": 2,
+                "imageUrl": "${IMAGE_URL}/masserts/module1/imgins3.png",
+                "tips": "Interviewers aim for specific selection targets in campus interviews. Knowing these targets helps ",
+                "option": [
+                    "You may be the best student in your class or college but with the guidance provided by Megathil, you will learn the simple nuances from the industry leaders, Senior HR professionals and interview panelists. ",
+                    "Megathil will provide you with a sneak peek at what the panelists may expect from you!",
+                    "What are you waiting for? Let us begin to conquer your dream job!"
+                ]
+            }
+        ]
+    }
+}

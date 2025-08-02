@@ -1,0 +1,185 @@
+{
+    "code": 200,
+    "messageCode": 1001,
+    "data": [
+        {
+            "body": {
+                "bgColor": [
+                    "52A8F1",
+                    "E9E8E8",
+                    "E9E8E8",
+                    "E9E8E8",
+                    "E9E8E8"
+                ],
+                "ImgUrl": [
+                    "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/Group.png?alt=media&token=2abbf5d9-d18c-44af-8ce8-e9ceed2548c7",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "text": [
+                    "InterView Readiness",
+                    "What to expect in Interviews",
+                    "Dress to Impress",
+                    "Virtual Interviews",
+                    "Tell me about yourself"
+                ]
+            }
+        },
+        {
+            "body": {
+                "bgColor": [
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4"
+                ],
+                "ImgUrl": [
+                    "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/lock.png?alt=media&token=3bc5923a-eecd-4bac-958e-0e317664c676",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "text": [
+                    "Organisation and You!",
+                    "Introducing Yourself",
+                    "Explaining your project",
+                    "About the organisation you are interviewing for",
+                    "What do you know about our organisation",
+                    "Is there any location preference? Are you willing to relocate?",
+                    "Group discussions",
+                    "Filing and certification",
+                    "What are your key strengths and weaknesses",
+                    "Rehearse and Practice"
+                ]
+            }
+        },
+        {
+            "body": {
+                "bgColor": [
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4"
+                ],
+                "ImgUrl": [
+                    "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/lock.png?alt=media&token=3bc5923a-eecd-4bac-958e-0e317664c676",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "text": [
+                    "Your Resume",
+                    "Carve your perfect Resume",
+                    "Tell me something which is not mentioned in your resume",
+                    "Email template to share along with CV",
+                    "What are your hobbies and Interests?",
+                    "Answering the question Why did you score low in academics",
+                    "Rehearse and Practice"
+                ]
+            }
+        },
+        {
+            "body": {
+                "bgColor": [
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4"
+                ],
+                "ImgUrl": [
+                    "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/lock.png?alt=media&token=3bc5923a-eecd-4bac-958e-0e317664c676",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "text": [
+                    "Unit 4",
+                    "Answering difficult questions",
+                    "How do you handle feedback and criticism?",
+                    "What do you want to improve in yourself",
+                    "How creative can you be?",
+                    "Give an example of your creativity",
+                    "Time Management",
+                    "Tell me about your time management skills",
+                    "Rehearse and Practice"
+                ]
+            }
+        },
+        {
+            "body": {
+                "bgColor": [
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4",
+                    "C4C4C4"
+                ],
+                "ImgUrl": [
+                    "https://firebasestorage.googleapis.com/v0/b/megathil.appspot.com/o/Group.png?alt=media&token=2abbf5d9-d18c-44af-8ce8-e9ceed2548c7",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                "text": [
+                    "Unit 5",
+                    "Understanding the role you are applying for",
+                    "What are your expectations from this job?",
+                    "Explain how you would be an asset to the organization",
+                    "Where do you see yourselves 5 years from now?",
+                    "Where do you see yourselves 5 years from now?",
+                    "what would make you angry?",
+                    "Conflict Management",
+                    "Have you had a conflict with your professor and if yes, how did you handle it",
+                    "Do you have any questions for me?",
+                    "On a scale of 1-10, how would you rate me as an interviewer",
+                    "Post Interview Etiquette"
+                ]
+            }
+        }
+    ]
+}
