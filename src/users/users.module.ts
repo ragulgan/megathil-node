@@ -37,6 +37,7 @@ import { UserUnitHistoryModule } from '../userUnitHistory/userUnitHistory.module
 import { userLearningHistory, userLearningHistorySchema } from '../userUnitHistory/userUnitHistory.schema';
 import { PromoCode, PromoCodeSchema } from '../Promotors/promotor.schema';
 import { Staff, StaffSchema } from '../staff/staff.schema';
+import { PaymentWorkTable, PaymentWorkTableSchema } from './paymentWork.schema';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { Staff, StaffSchema } from '../staff/staff.schema';
     MongooseModule.forFeature([{ name: userLearningHistory.name, schema: userLearningHistorySchema }]),
     MongooseModule.forFeature([{ name: PromoCode.name, schema: PromoCodeSchema }]),
     MongooseModule.forFeature([{ name: Staff.name, schema: StaffSchema }]),
+    MongooseModule.forFeature([{ name: PaymentWorkTable.name, schema: PaymentWorkTableSchema }]),
 
     UserUnitHistoryModule,
     OtpModule,

@@ -10,10 +10,12 @@ export enum PaymentStatus {
 export class UpdateTransactionDto {
   @ApiProperty({ example: 'Gems' })
   @IsString()
+  @IsOptional()
   readonly item: string;
 
   @ApiProperty({ example: 5 })
   @IsNumber()
+  @IsOptional()
   readonly quantity: number;
 
   @ApiProperty({ example: '664c9d3f232a418a40021ae2', type: String })
@@ -41,4 +43,14 @@ export class UpdateTransactionDto {
   })
   @IsEnum(PaymentStatus)
   readonly status: PaymentStatus;
+
+  @ApiProperty({ example: '664c9d3f232a418a40021ae2', type: String })
+  @IsString()
+  @IsOptional()
+  readonly topicId: string;
+
+  @ApiProperty({ example: '664c9d3f232a418a40021ae2', type: String })
+  @IsString()
+  @IsOptional()
+  readonly offerId: string;
 }

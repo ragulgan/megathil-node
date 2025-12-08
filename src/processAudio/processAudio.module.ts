@@ -15,6 +15,8 @@ import { ProcessAudioService } from './processAudio.service';
 import { UserScoreHistories, UserScoreHistoriesSchema } from 'src/users/userScoreHistory.schema';
 import { Unit, UnitSchema } from 'src/unit/unit.schema';
 import { HttpModule } from '@nestjs/axios';
+import { CertificateService } from 'src/certificateGeneration/certificate/certificate.service';
+import { MailService } from 'src/certificateGeneration/mail/mail.service';
 
 @Module({
   imports: [
@@ -32,6 +34,6 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule
   ],
   controllers: [ProcessAudioController],
-  providers: [ProcessAudioService, ResponseService],
+  providers: [ProcessAudioService, ResponseService, MailService, CertificateService],
 })
 export class ProcessAudioModule { }

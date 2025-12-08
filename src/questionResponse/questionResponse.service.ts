@@ -17,11 +17,10 @@ import { calculateMegathilPoints, generateCertificateId } from 'src/utill/utill'
 import { Achievements } from 'src/achievements/achievements.schema';
 import { UserScores } from 'src/users/userScores.schema';
 import { UserScoreHistories } from 'src/users/userScoreHistory.schema';
-import { AxiosResponse } from 'axios';
-import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { CertificateDTO } from './dto/certificate.dto';
 import { UserAchievement } from 'src/users/userAchievement.schema';
+import { CertificateService } from 'src/certificateGeneration/certificate/certificate.service';
+import { MailService } from 'src/certificateGeneration/mail/mail.service';
 const mongoose = require('mongoose');
 const moment = require('moment');
 
@@ -59,6 +58,8 @@ export class QuestionResponseService {
     @InjectModel(UserScoreHistories.name) private userScoreHistoryModel: Model<UserScoreHistories>,
     @InjectModel(UserAchievement.name) private userAchievementModel: Model<UserAchievement>,
     private readonly usersService: UsersService,
+    private readonly certificateService: CertificateService,
+    private readonly mailService: MailService,
     private httpService: HttpService
   ) { }
 
@@ -292,7 +293,7 @@ export class QuestionResponseService {
             //Dice Id Implementation
             this.awardAchievement(unitId, moduleId, userId).then(() => { }).catch((e) => { console.log("Error:", e) });
 
-            this.checkAndIssueCertificate(unitId, moduleId, userId, decodedToken).then(() => { }).catch((e) => { console.log("Error:", e) });
+            this.checkAndIssueCertificate(unitId, moduleId, userId, decodedToken, questionId).then(() => { }).catch((e) => { console.log("Error:", e) });
 
             const moduleIdData: any = await this.modulesModel.findOne({ _id: moduleId })
               .populate('xpId', "value")
@@ -1000,7 +1001,7 @@ export class QuestionResponseService {
     }
   }
 
-  async checkAndIssueCertificate(unitId: string, moduleId: string, userId: string, decodedToken: any) {
+  async checkAndIssueCertificate(unitId: string, moduleId: string, userId: string, decodedToken: any, questionId: any) {
     try {
       const ObjectId = mongoose.Types.ObjectId;
       const user = await this.usersModel.findById(userId);
@@ -1019,115 +1020,95 @@ export class QuestionResponseService {
             { $limit: 1 }
           ]);
           if (lastModule.length && lastModule[0]._id.toString() === moduleId) {
-            await this.usersModel.updateOne(
-              { _id: userId },
+            const lastQuestion = await this.questionModel.aggregate([
               {
-                $set: {
-                  unitsCompleted: true
+                $match: {
+                  status: 'ACTIVE',
+                  moduleId: new ObjectId(moduleId),
                 }
-              }
-            );
+              },
+              {
+                $lookup: {
+                  from: 'questiontypes',
+                  localField: 'questionType',
+                  foreignField: '_id',
+                  as: 'questionType'
+                }
+              },
+              { $unwind: "$questionType" },
+              {
+                $match: {
+                  "questionType.displayValue": { $in: ["moduleInstruction", "Modulequestions"] }
+                }
+              },
+              { $addFields: { displayOrderNum: { $toInt: "$displayOrder" } } },
+              { $sort: { displayOrderNum: -1 } },
+              { $limit: 1 }
+            ]);
 
-            if (!user.certificateIssued) {
-              const userScores = await this.userScoreHistoryModel.aggregate([
+            const lastQuestionId = lastQuestion[0]?._id.toString();
+            if (lastQuestionId && questionId === lastQuestionId) {
+              await this.usersModel.updateOne(
+                { _id: userId },
                 {
-                  $match: { userId: new ObjectId(userId) }
-                },
-                {
-                  $sort: { createdAt: -1 }
-                },
-                {
-                  $group: {
-                    _id: { unitId: "$unitId", moduleId: "$moduleId" },
-                    scoredMVP: { $first: "$scoredMVP" },
-                    moduleMVP: { $first: "$moduleMVP" },
-                  }
-                },
-                {
-                  $group: {
-                    _id: null,
-                    totalScoredMVP: { $sum: "$scoredMVP" },
-                    totalModuleMVP: { $sum: "$moduleMVP" }
+                  $set: {
+                    unitsCompleted: true
                   }
                 }
-              ]);
+              );
 
-              let percentageScore = 0;
-              if (userScores.length > 0 && userScores[0].totalModuleMVP > 0) {
-                const totalScoredMVP = userScores[0].totalScoredMVP;
-                const totalModuleMVP = userScores[0].totalModuleMVP;
-
-                percentageScore = (totalScoredMVP / totalModuleMVP) * 100;
-                percentageScore = Math.round(percentageScore);
-              }
-
-              const apiKey = process.env.DICE_ID_API_KEY;
-              const orgId = process.env.DICE_ID_ORG_ID;
-              const invokedBy = process.env.DICE_ID_INVOKED_BY;
-
-              const authToken = await this.getAuthToken(apiKey, orgId, invokedBy);
-              if (authToken) {
-                const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                const referralCode = generateCertificateId();
-                const issuedOn = moment().format("DD-MMM-YYYY");
-                const validTill = moment().add(1, 'year').format("DD-MMM-YYYY");
-
-                const payload = {
-                  "is_cert_required": true,
-                  "schema_name": process.env.DICE_ID_SCHEMA,
-                  "schema_version": process.env.DICE_ID_SCHEMA_VERSION,
-                  "invite_modes": ["email"],
-                  "invitee_name": "Megathil",
-                  "email": {
-                    "invitee_email": decodedToken.email,
-                    "email_template_id": process.env.DICE_ID_EMAIL_TEMPLATE_ID
+              if (!user.certificateIssued) {
+                const userScores = await this.userScoreHistoryModel.aggregate([
+                  {
+                    $match: { userId: new ObjectId(userId) }
                   },
-                  "template_id": process.env.DICE_ID_EMAIL_TEMPLATE_ID,
-                  "attributes": {
-                    "Certificate ID": referralCode,
-                    "dice_display_name": "AI-Powered Interview Preparation Program",
-                    "Valid Till": validTill,
-                    "Skill Name": "AI-Powered Interview Preparation Program",
-                    "Name": `${capitalize(decodedToken.firstName)} ${capitalize(decodedToken.lastName)}`,
-                    "Issued On": issuedOn,
-                    "Score": "A GRADE",
-                    "Cert Level": "Course Completed", // make it dynamic
-                    "User ID": userId,
-                    "Issued By": "WIPRO DICE ID",
-                    "Email": decodedToken.email,
-                    "Phone": `+91${decodedToken.mobileNumber}`
+                  {
+                    $sort: { createdAt: -1 }
+                  },
+                  {
+                    $group: {
+                      _id: { unitId: "$unitId", moduleId: "$moduleId" },
+                      scoredMVP: { $first: "$scoredMVP" },
+                      moduleMVP: { $first: "$moduleMVP" },
+                    }
+                  },
+                  {
+                    $group: {
+                      _id: null,
+                      totalScoredMVP: { $sum: "$scoredMVP" },
+                      totalModuleMVP: { $sum: "$moduleMVP" }
+                    }
                   }
-                };
+                ]);
 
-                // console.log("payload", payload)
+                let percentageScore = 0;
+                if (userScores.length > 0 && userScores[0].totalModuleMVP > 0) {
+                  const totalScoredMVP = userScores[0].totalScoredMVP;
+                  const totalModuleMVP = userScores[0].totalModuleMVP;
 
-                const issueResponse = await this.issueCredential(apiKey, orgId, invokedBy, authToken, payload);
-                if (issueResponse?.data?.status === 'Success') {
-                  const certificateRef = issueResponse.data.result.record_id;
-                  const certificateStatus = await this.getRecordStatus(apiKey, orgId, invokedBy, authToken, certificateRef)
+                  percentageScore = (totalScoredMVP / totalModuleMVP) * 100;
+                  percentageScore = Math.round(percentageScore);
+                }
+                const capitalize = (text: string) =>
+                  text
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
+                const fullName = `${capitalize(user.firstName)} ${capitalize(user.lastName)}`;
+                try {
+                  const { filePath: certPath } = await this.certificateService.generate(userId, fullName);
+                  await this.mailService.sendCertificate(decodedToken.email, fullName, certPath);
                   await this.usersModel.updateOne(
                     { _id: userId },
                     {
                       $set: {
                         certificateIssued: true,
-                        certificateRef: certificateRef
                       }
                     }
                   );
-
-                  if (certificateStatus?.status === "Success") {
-                    await this.usersModel.updateOne(
-                      { _id: userId },
-                      {
-                        $set: {
-                          certificateStatusInfo: certificateStatus?.result?.record
-                        }
-                      }
-                    );
-                  }
+                } catch (err) {
+                  console.error('Certificate generation/email failed:', err);
                 }
-              } else {
-                console.error("Auth token not received. Skipping certificate issuance.");
               }
             }
           }
@@ -1139,86 +1120,9 @@ export class QuestionResponseService {
     }
   }
 
-  async getAuthToken(apiKey: string, orgId: string, invokedBy: string): Promise<string> {
-    const headers = {
-      'invoked_by': invokedBy,
-      'org_id': orgId,
-      'x-api-key': apiKey,
-    };
-
-    try {
-      const response: AxiosResponse<any> = await lastValueFrom(this.httpService.get(process.env.DICE_ID_TOKEN_URL, { headers }));
-      console.log("AuthTokenReceived", response.data.result.token)
-      if (response.data && response.data.result && response.data.result.token) {
-        return response.data.result.token;
-      } else {
-        throw new Error('Token not found in response');
-      }
-    } catch (error) {
-      console.log("error###", error);
-      console.error('Error fetching token:', error.message);
-      throw new Error('Failed to fetch token');
-    }
-  }
-
-  async issueCredential(
-    apiKey: string,
-    orgId: string,
-    invokedBy: string,
-    authToken: string,
-    payload: CertificateDTO
-  ): Promise<AxiosResponse<any>> {
-    const headers = {
-      'x-api-key': apiKey,
-      'Org_id': orgId,
-      'Invoked_by': invokedBy,
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${authToken}`
-    };
-
-    try {
-      return await lastValueFrom(this.httpService.post(process.env.DICE_ID_CREDENTIAL_ISSUANCE_URL, payload, { headers }));
-    } catch (error) {
-      if (error.response) {
-        console.error('API Error Response:', error.response.data);
-        console.error('Status Code:', error.response.status);
-      } else {
-        console.error('Error Message:', error.message);
-      }
-      throw new Error('Failed to issue credential');
-    }
-  }
-
-  async getRecordStatus(apiKey: string, orgId: string, invokedBy: string, authToken: string, recordId: string): Promise<any> {
-    const headers = {
-      'x-api-key': apiKey,
-      'Org_id': orgId,
-      'Invoked_by': invokedBy,
-      'Authorization': `Bearer ${authToken}`
-    };
-
-    try {
-      const response: AxiosResponse<any> = await lastValueFrom(
-        this.httpService.get(`${process.env.DICE_ID_GET_STATUS}/record/${recordId}`, { headers })
-      );
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        console.error('API Error Response:', error.response.data);
-        console.error('Status Code:', error.response.status);
-      } else {
-        console.error('Error Message:', error.message);
-      }
-      throw new Error('Failed to fetch record status');
-    }
-  }
-
   async certificateReIssue(userId: any) {
     try {
       const user = await this.usersModel.findById(userId);
-      const apiKey = process.env.DICE_ID_API_KEY;
-      const orgId = process.env.DICE_ID_ORG_ID;
-      const invokedBy = process.env.DICE_ID_INVOKED_BY;
       const ObjectId = mongoose.Types.ObjectId;
 
       if (user.unitsCompleted || user.certificateIssued) {
@@ -1248,76 +1152,78 @@ export class QuestionResponseService {
 
         const userProgessStatus = await this.usersProgressStatusModel.findOne(match);
         if (userProgessStatus.completedPercentage === 100 && userProgessStatus.status === "COMPLETED") {
-          const authToken = await this.getAuthToken(apiKey, orgId, invokedBy);
-          if (authToken) {
-            const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-            const referralCode = generateCertificateId();
-            const issuedOn = moment().format("DD-MMM-YYYY");
-            const validTill = moment().add(1, 'year').format("DD-MMM-YYYY");
+          const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          const fullName = `${capitalize(user.firstName)} ${capitalize(user.lastName)}`;
+          try {
+            const { filePath: certPath } = await this.certificateService.generate(userId, fullName);
+            await this.mailService.sendCertificate(user.email, fullName, certPath);
 
-            const payload = {
-              "is_cert_required": true,
-              "schema_name": process.env.DICE_ID_SCHEMA,
-              "schema_version": process.env.DICE_ID_SCHEMA_VERSION,
-              "invite_modes": ["email"],
-              "invitee_name": "Megathil",
-              "email": {
-                "invitee_email": user.email,
-                "email_template_id": process.env.DICE_ID_EMAIL_TEMPLATE_ID
-              },
-              "template_id": process.env.DICE_ID_EMAIL_TEMPLATE_ID,
-              "attributes": {
-                "Certificate ID": referralCode,
-                "dice_display_name": "AI-Powered Interview Preparation Program",
-                "Valid Till": validTill,
-                "Skill Name": "AI-Powered Interview Preparation Program",
-                "Name": `${capitalize(user.firstName)} ${capitalize(user.lastName)}`,
-                "Issued On": issuedOn,
-                "Score": "A GRADE",
-                "Cert Level": "Course Completed",
-                "User ID": userId,
-                "Issued By": "WIPRO DICE ID",
-                "Email": user.email,
-                "Phone": `+91${user.mobileNumber}`
-              }
-            };
-
-            const issueResponse = await this.issueCredential(apiKey, orgId, invokedBy, authToken, payload);
-            if (issueResponse?.data?.status === 'Success') {
-              const certificateRef = issueResponse.data.result.record_id;
-              const certificateStatus = await this.getRecordStatus(apiKey, orgId, invokedBy, authToken, certificateRef)
-              await this.usersModel.updateOne(
-                { _id: userId },
-                {
-                  $set: {
-                    certificateIssued: true,
-                    certificateRef: certificateRef
-                  }
+            await this.usersModel.updateOne(
+              { _id: userId },
+              {
+                $set: {
+                  certificateIssued: true,
                 }
-              );
-
-              if (certificateStatus?.status === "Success") {
-                await this.usersModel.updateOne(
-                  { _id: userId },
-                  {
-                    $set: {
-                      certificateStatusInfo: certificateStatus?.result?.record
-                    }
-                  }
-                );
               }
-              return {
-                status: certificateStatus?.status,
-                recordId: certificateStatus?.result?.record_id,
-                Cred_URL: certificateStatus?.result?.record?.Cred_URL
-              };
-            }
+            );
+            return {
+              status: 'Success',
+            };
+          } catch (err) {
+            console.error('Certificate generation/email failed:', err);
+            return {
+              status: 'Failed',
+              message: 'Certificate generation or email sending failed'
+            };
           }
         }
       }
     } catch (error) {
       console.error("Error during certificate issuance process:", error.message);
     }
+  }
 
+  async checkCompletionAndStreamCertificate(userId: string): Promise<{ success: boolean; filePath?: string; code?: string }> {
+    try {
+      const ObjectId = mongoose.Types.ObjectId;
+      const user = await this.usersModel.findById(userId);
+      if (!user) return { success: false, code: '5040' };
+      const lastUnit = await this.unitsModel.aggregate([
+        { $match: { status: 'ACTIVE' } },
+        { $addFields: { displayOrderNum: { $toInt: "$displayOrder" } } },
+        { $sort: { displayOrderNum: -1 } },
+        { $limit: 1 }
+      ]);
+      const lastUnitId = lastUnit[0]?.unitId;
+      if (!lastUnitId) return { success: false, code: 'LAST_UNIT_NOT_FOUND' };
+      const lastModule = await this.modulesModel.aggregate([
+        { $match: { status: 'ACTIVE', unitId: new ObjectId(lastUnitId) } },
+        { $addFields: { displayOrderNum: { $toInt: "$displayOrder" } } },
+        { $sort: { displayOrderNum: -1 } },
+        { $limit: 1 }
+      ]);
+      const lastModuleId = lastModule[0]?._id;
+      if (!lastModuleId) return { success: false, code: 'LAST_MODULE_NOT_FOUND' };
+
+      const progress = await this.usersProgressStatusModel.findOne({
+        userId,
+        unitId: lastUnitId,
+        moduleId: lastModuleId,
+        status: 'COMPLETED',
+        completedPercentage: 100
+      });
+      if (progress) {
+        const formatUserName = (firstName?: string, lastName?: string): string => {
+          return [firstName, lastName].filter(Boolean).map(name => name.toUpperCase()).join(' ');
+        };
+        const userName = formatUserName(user.firstName, user.lastName) || 'Learner';
+        const cert = await this.certificateService.generate(userId, userName);
+        return { success: true, filePath: cert.filePath };
+      }
+      return { success: false, code: '5112' };
+    } catch (error) {
+      console.error('Error in checkCompletionAndGenerateCertificate:', error);
+      return { success: false };
+    }
   }
 }

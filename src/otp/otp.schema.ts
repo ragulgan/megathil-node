@@ -28,7 +28,7 @@ export class Otp {
 
   @Prop({
     type: String,
-    required: true
+    required: false
   })
   deviceId: string;
 

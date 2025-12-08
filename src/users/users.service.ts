@@ -10,7 +10,7 @@ import { LoginHistory } from '../loginHistory/schema';
 import * as _ from 'lodash';
 import { VALIDATE_USER } from '../libs/constants'
 import * as moment from 'moment';
-import { InitiateDto, LoginDto, OtpDto } from 'src/auth/dto/logindto';
+import { InitiateDto, LoginDto, OtpDto, SignUpDto } from 'src/auth/dto/logindto';
 import { UserEarnings } from './userEarnings.schema';
 import { UserActivity } from './usersActivites.schema';
 import { UserProgressStatus } from './userProgressStatus.schema';
@@ -41,7 +41,7 @@ const Razorpay = require('razorpay');
 import { EmailService } from '../emailService/emailService.service'
 import { UserScoreHistories } from './userScoreHistory.schema';
 import { UserGainGem } from './userGemsGain.schema';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry  } from '@nestjs/schedule';
 import { NotificationService } from 'src/notification/notification.service';
 import { Notification } from 'src/notification/notification.schema';
 import * as json2xls from 'json2xls';
@@ -50,6 +50,7 @@ import * as pdf from 'html-pdf';
 import { Twilio } from 'twilio';
 import { PromoCode } from '../Promotors/promotor.schema';
 import { Staff } from '../staff/staff.schema';
+import { PaymentWorkTable } from './paymentWork.schema';
 
 
 @Injectable()
@@ -81,10 +82,12 @@ export class UsersService {
     @InjectModel(UserAchievement.name) private UserAchievementModel: Model<Notification>,
     @InjectModel(PromoCode.name) private PromoCodeModel: Model<PromoCode>,
     @InjectModel(Staff.name) private StaffModel: Model<Staff>,
+    @InjectModel(PaymentWorkTable.name) private PaymentWorkTableModel: Model<PaymentWorkTable>,
 
     private readonly adminService: AdminService,
     private readonly emailService: EmailService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private schedulerRegistry: SchedulerRegistry
 
   ) { }
 
@@ -325,6 +328,10 @@ export class UsersService {
 
     if (queryParams.userType) {
       match['userType'] = queryParams.userType
+    }
+
+    if (queryParams.isLmsUser !== undefined) {
+      match.isLmsUser = queryParams.isLmsUser === 'true';
     }
 
 
@@ -732,6 +739,10 @@ export class UsersService {
       match['source'] = queryParams.source
     }
 
+    if (queryParams.isLmsUser !== undefined) {
+      match.isLmsUser = queryParams.isLmsUser === 'true';
+    }
+
     if (queryParams.collegeId) {
       if (_.isArray(queryParams.collegeId)) {
         match['college'] = { $in: queryParams.collegeId.map((id: string) => new ObjectId(id)) };
@@ -1135,6 +1146,10 @@ export class UsersService {
       match['source'] = queryParams.source
     }
 
+    if (queryParams.isLmsUser !== undefined) {
+      match.isLmsUser = queryParams.isLmsUser === 'true';
+    }
+
     if (queryParams.courseId) {
       if (_.isArray(queryParams.courseId)) {
         match['course'] = { $in: queryParams.courseId.map((id: string) => new ObjectId(id)) };
@@ -1458,6 +1473,397 @@ export class UsersService {
     }
   }
 
+  async findAllLmsUsers(queryParams: any) {
+    const limit = Number(queryParams.limit) || 10;
+    const page = Number(queryParams.page) || 1;
+    const skipValue = (page - 1) * limit;
+    let match: any = {
+      $and: [
+        { status: 'ACTIVE' },
+        { isLmsUser: true }
+      ]
+    };
+    const ObjectId = mongoose.Types.ObjectId;
+    if (queryParams.firstName || queryParams.lastName || queryParams.email || queryParams.mobileNumber) {
+      const orCondition = []
+      if (queryParams.firstName) {
+        const splitValue = queryParams.firstName.split(' ');
+        const filteredArr = splitValue.filter(entry => /\S/.test(entry));
+        const firstName = filteredArr[0];
+        if (firstName) {
+          orCondition.push({
+            firstName: new RegExp(`${firstName}`, 'i')
+          });
+        }
+      }
+
+      if (queryParams.lastName) {
+        const splitValue = queryParams.lastName.split(' ');
+        const filteredArr = splitValue.filter(entry => /\S/.test(entry));
+        const lastName = filteredArr[filteredArr.length - 1];
+        if (lastName) {
+          orCondition.push({
+            lastName: new RegExp(`${lastName}`, 'i')
+          });
+        }
+      }
+
+      if (queryParams.email) {
+        orCondition.push({
+          email: new RegExp(`${queryParams.email}`, 'i')
+        });
+      }
+
+      if (queryParams.mobileNumber) {
+        orCondition.push({
+          mobileNumber: new RegExp(`${queryParams.mobileNumber}`, 'i')
+        });
+      }
+      match = { ...match, $or: orCondition }
+    }
+
+    if (queryParams.status) {
+      match['status'] = queryParams.status
+    }
+
+    if (queryParams.lmsUserType) {
+      match['lmsUserType'] = queryParams.lmsUserType
+    }
+
+    if (queryParams.lmsSource) {
+      match['lmsSource'] = queryParams.lmsSource
+    }
+
+    if (queryParams.collegeId) {
+      if (_.isArray(queryParams.collegeId)) {
+        match['college'] = { $in: queryParams.collegeId.map((id: string) => new ObjectId(id)) };
+      } else {
+        match['college'] = new ObjectId(queryParams.collegeId);
+      }
+    }
+
+    if (queryParams.courseId) {
+      if (_.isArray(queryParams.courseId)) {
+        match['course'] = { $in: queryParams.courseId.map((id: string) => new ObjectId(id)) };
+      } else {
+        match['course'] = new ObjectId(queryParams.courseId);
+      }
+    }
+
+    if (queryParams.departmentId) {
+      if (_.isArray(queryParams.departmentId)) {
+        match['department'] = { $in: queryParams.departmentId.map((id: string) => new ObjectId(id)) };
+      } else {
+        match['department'] = new ObjectId(queryParams.departmentId);
+      }
+    }
+
+    const sortCriteria: any = {};
+    if (queryParams.sortBy === 'firstName') {
+      sortCriteria.firstName = queryParams.sort === 'asc' ? 1 : -1;
+    } else {
+      sortCriteria.createdAt = -1;
+    }
+
+    try {
+      const userList = await this.UsersModel.aggregate([
+        { $match: match },
+        {
+          $lookup: {
+            from: 'courses',
+            localField: 'course',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  name: "$name",
+                  id: "$_id",
+                  _id: 0
+                }
+              }
+            ],
+            as: 'course'
+          }
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  name: "$name",
+                  id: "$_id",
+                  _id: 0
+                }
+              }
+            ],
+            as: 'department'
+          }
+        },
+        {
+          $lookup: {
+            from: 'colleges',
+            localField: 'college',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  name: "$name",
+                  id: "$_id",
+                  collegeLogo: "$collegeLogo",
+                  _id: 0
+                }
+              }
+            ],
+            as: 'college'
+          }
+        },
+        {
+          $lookup: {
+            from: "otps",
+            let: { userEmail: "$email", userMobile: "$mobileNumber" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $and: [{ $eq: ["$email", "$$userEmail"] }, { $eq: ["$status", "VERIFIED"] }] },
+                      { $and: [{ $eq: ["$mobileNumber", "$$userMobile"] }, { $eq: ["$status", "VERIFIED"] }] }
+                    ]
+                  }
+                }
+              },
+              { $sort: { updatedAt: -1 } },
+              { $limit: 1 },
+              {
+                $project: {
+                  lastLoginTime: "$updatedAt",
+                  _id: 0
+                }
+              }
+            ],
+            as: "loginInfo"
+          }
+        },  
+        
+        { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$college', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$loginInfo', preserveNullAndEmptyArrays: true } },
+        {
+          $addFields: {
+            id: "$_id"
+          }
+        },
+        { $sort: sortCriteria },
+        { $skip: skipValue },
+        { $limit: limit }
+      ]).exec();
+      const count = await this.UsersModel.countDocuments(match).exec();
+      return { userList, count };
+    } catch (error) {
+      throw new Error("An error occurred while fetching users.");
+    }
+  }
+
+  async findAllStaffLoginLmsUser(queryParams: any, authId: string) {
+    const staffDetails = await this.StaffModel.findById(authId).select('college').exec();
+    const limit = Number(queryParams.limit) || 10;
+    const page = Number(queryParams.page) || 1;
+    const skipValue = (page - 1) * limit;
+    let match: any = { 
+      $and: [
+        { status: 'ACTIVE' },
+        { college: staffDetails.college },
+        { isLmsUser: true }
+      ]
+    };
+
+    const ObjectId = mongoose.Types.ObjectId;
+    if (queryParams.firstName || queryParams.lastName || queryParams.email || queryParams.mobileNumber) {
+      const orCondition = []
+      if (queryParams.firstName) {
+        const splitValue = queryParams.firstName.split(' ');
+        const filteredArr = splitValue.filter(entry => /\S/.test(entry));
+        const firstName = filteredArr[0];
+        if (firstName) {
+          orCondition.push({
+            firstName: new RegExp(`${firstName}`, 'i')
+          });
+        }
+      }
+
+      if (queryParams.lastName) {
+        const splitValue = queryParams.lastName.split(' ');
+        const filteredArr = splitValue.filter(entry => /\S/.test(entry));
+        const lastName = filteredArr[filteredArr.length - 1];
+        if (lastName) {
+          orCondition.push({
+            lastName: new RegExp(`${lastName}`, 'i')
+          });
+        }
+      }
+
+      if (queryParams.email) {
+        orCondition.push({
+          email: new RegExp(`${queryParams.email}`, 'i')
+        });
+      }
+
+      if (queryParams.mobileNumber) {
+        orCondition.push({
+          mobileNumber: new RegExp(`${queryParams.mobileNumber}`, 'i')
+        });
+      }
+      match = { ...match, $or: orCondition }
+    }
+
+    if (queryParams.status) {
+      match['status'] = queryParams.status
+    }
+
+    if (queryParams.lmsSource) {
+      match['lmsSource'] = queryParams.lmsSource
+    }
+
+    if (queryParams.lmsUserType) {
+      match['lmsUserType'] = queryParams.lmsUserType
+    }
+
+    if (queryParams.collegeId) {
+      if (_.isArray(queryParams.collegeId)) {
+        match['college'] = { $in: queryParams.collegeId.map((id: string) => new ObjectId(id)) };
+      } else {
+        match['college'] = new ObjectId(queryParams.collegeId);
+      }
+    }
+
+    if (queryParams.courseId) {
+      if (_.isArray(queryParams.courseId)) {
+        match['course'] = { $in: queryParams.courseId.map((id: string) => new ObjectId(id)) };
+      } else {
+        match['course'] = new ObjectId(queryParams.courseId);
+      }
+    }
+
+    if (queryParams.departmentId) {
+      if (_.isArray(queryParams.departmentId)) {
+        match['department'] = { $in: queryParams.departmentId.map((id: string) => new ObjectId(id)) };
+      } else {
+        match['department'] = new ObjectId(queryParams.departmentId);
+      }
+    }
+
+    const sortCriteria: any = {};
+    if (queryParams.sortBy === 'firstName') {
+      sortCriteria.firstName = queryParams.sort === 'asc' ? 1 : -1;
+    } else {
+      sortCriteria.createdAt = -1;
+    }
+
+    try {
+      const userList = await this.UsersModel.aggregate([
+        { $match: match },
+        {
+          $lookup: {
+            from: 'courses',
+            localField: 'course',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  name: "$name",
+                  id: "$_id",
+                  _id: 0
+                }
+              }
+            ],
+            as: 'course'
+          }
+        },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  name: "$name",
+                  id: "$_id",
+                  _id: 0
+                }
+              }
+            ],
+            as: 'department'
+          }
+        },
+        {
+          $lookup: {
+            from: 'colleges',
+            localField: 'college',
+            foreignField: '_id',
+            pipeline: [
+              {
+                $project: {
+                  name: "$name",
+                  id: "$_id",
+                  collegeLogo: "$collegeLogo",
+                  _id: 0
+                }
+              }
+            ],
+            as: 'college'
+          }
+        },
+        {
+          $lookup: {
+            from: "otps",
+            let: { userEmail: "$email", userMobile: "$mobileNumber" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $and: [{ $eq: ["$email", "$$userEmail"] }, { $eq: ["$status", "VERIFIED"] }] },
+                      { $and: [{ $eq: ["$mobileNumber", "$$userMobile"] }, { $eq: ["$status", "VERIFIED"] }] }
+                    ]
+                  }
+                }
+              },
+              { $sort: { updatedAt: -1 } },
+              { $limit: 1 },
+              {
+                $project: {
+                  lastLoginTime: "$updatedAt",
+                  _id: 0
+                }
+              }
+            ],
+            as: "loginInfo"
+          }
+        },
+        { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$department', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$college', preserveNullAndEmptyArrays: true } },
+        { $unwind: { path: '$loginInfo', preserveNullAndEmptyArrays: true } },
+        {
+          $addFields: {
+            id: "$_id"
+          }
+        },
+        { $sort: sortCriteria },
+        { $skip: skipValue },
+        { $limit: limit }
+      ]).exec();
+      const count = await this.UsersModel.countDocuments(match).exec();
+      return { userList, count };
+    } catch (error) {
+      throw new Error("An error occurred while fetching users.");
+    }
+  }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.UsersModel.findOne({ email }).exec();
@@ -1637,6 +2043,50 @@ export class UsersService {
         $unwind: { path: '$module', preserveNullAndEmptyArrays: true },
       },
       {
+        $lookup: {
+          from: 'topics',
+          localField: 'topicId',
+          foreignField: '_id',
+          as: 'topic'
+        }
+      },
+      {
+        $unwind: { path: '$topic', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: 'subtopics',
+          localField: 'subTopicId',
+          foreignField: '_id',
+          as: 'subtopic'
+        }
+      },
+      {
+        $unwind: { path: '$subtopic', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: 'subtopics1',
+          localField: 'subTopic1Id',
+          foreignField: '_id',
+          as: 'subtopic1'
+        }
+      },
+      {
+        $unwind: { path: '$subtopic1', preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: 'lmstests',
+          localField: 'testLevelId',
+          foreignField: '_id',
+          as: 'lmstest'
+        }
+      },
+      {
+        $unwind: { path: '$lmstest', preserveNullAndEmptyArrays: true },
+      },
+      {
         $project: {
           _id: 1,
           activity: 1,
@@ -1650,7 +2100,8 @@ export class UsersService {
             lastName: '$user.lastName',
             email: '$user.email',
             mobileNumber: '$user.mobileNumber',
-            profileImage: '$user.profileImage'
+            profileImage: '$user.profileImage',
+            isLmsUser: '$user.isLmsUser',
           },
           unitId: {
             id: '$unit._id',
@@ -1661,6 +2112,25 @@ export class UsersService {
             id: '$module._id',
             moduleName: '$module.moduleName',
             imageUrl: '$module.imageUrl',
+          },
+          topicId: {
+            id: '$topic._id',
+            topicName: '$topic.topicName',
+            imageUrl: '$topic.imageUrl',
+          },
+          subtopicId: {
+            id: '$subtopic._id',
+            subtopicName: '$subtopic.subTopicName',
+            imageUrl: '$subtopic.imageUrl',
+          },
+          subtopic1Id: {
+            id: '$subtopic1._id',
+            subtopic1Name: '$subtopic1.subTopicName1',
+            imageUrl: '$subtopic.imageUrl',
+          },
+          testId: {
+            id: '$lmstest._id',
+            subtopicName: '$lmstest.testLevel',
           }
         }
       },
@@ -1697,9 +2167,13 @@ export class UsersService {
     try {
       const userActivities = await this.userActivityModel
         .find({ userId: userId })
-        .populate("userId", "id firstName lastName email mobileNumber profileImage")
+        .populate("userId", "id firstName lastName email mobileNumber profileImage isLmsUser")
         .populate("unitId", "id unitName imageUrl")
         .populate("moduleId", "id moduleName imageUrl")
+        .populate("topicId", "id topicName imageUrl")
+        .populate("subTopicId", "id subTopicName imageUrl")
+        .populate("subTopic1Id", "id subTopicName1 imageUrl")
+        .populate("testLevelId", "id testLevel")
         .sort({ createdAt: -1 })
         .skip(skipValue)
         .limit(limit)
@@ -1720,9 +2194,13 @@ export class UsersService {
     try {
       const userActivities = await this.userActivityModel
         .find({ userId: userId })
-        .populate("userId", "id firstName lastName email mobileNumber profileImage")
+        .populate("userId", "id firstName lastName email mobileNumber profileImage isLmsUser")
         .populate("unitId", "id unitName imageUrl")
         .populate("moduleId", "id moduleName imageUrl")
+        .populate("topicId", "id topicName imageUrl")
+        .populate("subTopicId", "id subTopicName imageUrl")
+        .populate("subTopic1Id", "id subTopicName1 imageUrl")
+        .populate("testLevelId", "id testLevel")
         .sort({ createdAt: -1 })
         .skip(skipValue)
         .limit(limit)
@@ -1808,6 +2286,17 @@ export class UsersService {
 
   async handleGemPurchase(paymentDto: PaymentDto, userId: string, gemsToAdd: number, paymentData: any = null, amount?: any) {
     const ObjectId = mongoose.Types.ObjectId;
+    const refNumber = paymentData?.id || paymentDto?.paymentBody?.purchaseID;
+
+  //Check duplicate BEFORE adding gems
+  const existing = await this.transactionModel.exists({ refNumber });
+  if (existing) {
+    console.log(`Duplicate purchaseID ${refNumber} ignored`);
+    return {
+      status: "DUPLICATE_PURCHASE",
+      message: "Purchase already processed"
+    };
+  }
     const userData = await this.UsersModel.findOneAndUpdate(
       { _id: userId },
       { $inc: { gemValue: gemsToAdd } },
@@ -1818,7 +2307,8 @@ export class UsersService {
       gemValue: gemsToAdd,
     }).then(() => { });
 
-    await this.userEarningsModel.create({//saving user earings while purchasing gems
+try {
+  await this.userEarningsModel.create({//saving user earings while purchasing gems
       userId: userId,
       activity: "Purchased gems",
       action: "purchased_gems",
@@ -1840,6 +2330,16 @@ export class UsersService {
       paymentResponse: paymentData || paymentDto.paymentBody,
       status: paymentDto?.status
     }).then(() => { });
+    } catch (error) {
+    if (error.code === 11000) {
+      console.error(`Duplicate transaction prevented: ${refNumber}`);
+      return {
+        status: "DUPLICATE_PURCHASE",
+        message: "Purchase already processed"
+      };
+    }
+    throw error;
+  }
 
     this.awardGemsForReferral(userId);
     // To get user name and email using userId to sent email once that purchanse success
@@ -1873,6 +2373,7 @@ export class UsersService {
           "name": `${aggregationResult[0].firstName} ${aggregationResult[0].lastName}`,
           "message": "Awesome news! You’ve just unlocked Premium on Megathil! Get ready to take your interview learning to the next level!",
           "gemValue": `${gemsToAdd}`,
+          "currencySymbol": `${paymentDto?.paymentBody?.currencySymbol || '₹'}`,
           "amount": `${amount || paymentDto?.paymentBody?.rawPrice}`
         }
         await this.emailService.sendMail(
@@ -1894,6 +2395,12 @@ export class UsersService {
       if (!paymentDto.paymentMethod || paymentDto.paymentMethod === "RAZORPAY") {
         const paymentData = await this.capturePayment(paymentDto);
 
+        const exists = await this.transactionModel.exists({ refNumber: paymentData?.id });
+      if (exists) {
+        console.log("Duplicate Razorpay payment ignored");
+        return { status: "DUPLICATE_PAYMENT", message: "Already processed" };
+      }
+
         if (paymentData.status === 'captured') {
           const amount = Number(paymentData?.amount) / 100;
 
@@ -1913,13 +2420,31 @@ export class UsersService {
         return { status: 'success', code: '3210' }
       }
       else if (paymentDto.paymentMethod === "INAPPPURCHASE") {
-        let gemsToAdd: any;
-        if (paymentDto.paymentFor === "UNIT") {
-          gemsToAdd = 2000;
-        } else if (paymentDto.paymentFor === "INTERVIEW") {
-          gemsToAdd = 2000;
+        const purchaseID = paymentDto?.paymentBody?.purchaseID;
+        const existingPurchaseID = await this.PaymentWorkTableModel.exists({ "paymentData.paymentBody.purchaseID": purchaseID });
+        if (existingPurchaseID) {
+          console.log(`purchaseID ${purchaseID} already exist`);
+          return {
+            status: "DUPLICATE_PURCHASE",
+            message: "Purchase already processed"
+          };
         }
-        return await this.handleGemPurchase(paymentDto, userId, gemsToAdd);
+        this.startPurchaseCron()
+        await this.PaymentWorkTableModel.create({
+             userId: userId,
+             paymentData: paymentDto,
+             status: 'PENDING',
+             message: `Gems purchased. ${paymentDto?.paymentBody?.purchaseID} added to for ${paymentDto?.paymentBody?.rawPrice} of payment.`
+           }).then(() => { });
+        //   let gemsToAdd: any;
+        // if (paymentDto.paymentFor === "UNIT") {
+        //   gemsToAdd = 2000;
+        // } else if (paymentDto.paymentFor === "INTERVIEW") {
+        //   gemsToAdd = 2000;
+        // }
+        // return await this.handleGemPurchase(paymentDto, userId, gemsToAdd);
+        const userData = await this.UsersModel.findOne({ _id: userId }).exec();
+        return {status: 'success', code: '3208', data: userData};
       }
     }
 
@@ -1936,6 +2461,104 @@ export class UsersService {
       }).then(() => { });
       return { status: 'success', code: '3210' }
     }
+  }
+  
+  @Cron('*/30 * * * * *', {
+    name: 'purchaseCron',
+    disabled: true,
+  })
+  async processPendingPayments() {
+    console.log('CRON STARTED: Processing pending in-app purchases');
+
+    /**
+     * STEP 1: Atomically claim exactly ONE PENDING record.
+     * This prevents two parallel cron executions (or two app instances)
+     * from processing the same payment at the same time.
+     */
+    const firstRecord = await this.PaymentWorkTableModel.findOneAndUpdate(
+      { status: 'PENDING' },
+      { status: 'PROCESSING', message: 'Picked by cron for processing' },
+      { sort: { createdAt: 1 }, new: true },
+    );
+
+    if (!firstRecord) {
+      console.log('No pending payments found.');
+      return;
+    }
+
+    const purchaseID = firstRecord.paymentData?.paymentBody?.purchaseID;
+
+    /**
+     * STEP 2: Mark any other PENDING rows with the same purchaseID as SKIPPED.
+     * Filter by status:'PENDING' so we don't touch rows already updated
+     * by another cron run.
+     */
+    if (purchaseID) {
+      const otherDuplicates = await this.PaymentWorkTableModel.find({
+        _id: { $ne: firstRecord._id },
+        'paymentData.paymentBody.purchaseID': purchaseID,
+        status: 'PENDING',
+      });
+
+      for (const dup of otherDuplicates) {
+        await this.PaymentWorkTableModel.findByIdAndUpdate(dup._id, {
+          status: 'SKIPPED',
+          message: 'Duplicate payment skipped',
+        });
+      }
+    }
+
+    /**
+     * STEP 3: Process the claimed record (add gems, create transaction, etc.).
+     */
+    const paymentDto = firstRecord.paymentData;
+    const userId = firstRecord.userId;
+
+    let gemsToAdd: any;
+    if (paymentDto.paymentFor === 'UNIT') {
+      gemsToAdd = 2000;
+    }
+    if (paymentDto.paymentFor === 'INTERVIEW') {
+      gemsToAdd = 2000;
+    }
+
+    try {
+      await this.handleGemPurchase(paymentDto, userId, gemsToAdd);
+
+      await this.PaymentWorkTableModel.findByIdAndUpdate(firstRecord._id, {
+        status: 'COMPLETED',
+        message: 'Gem purchase processed successfully',
+      });
+
+      console.log(`Processed purchaseID ${purchaseID}`);
+      const remaining = await this.PaymentWorkTableModel.countDocuments({ status: 'PENDING' });
+      if (remaining === 0) {
+         this.stopPurchaseCron();
+      }
+    } catch (err) {
+      console.log(`Error processing purchaseID ${purchaseID}`, err);
+
+      await this.PaymentWorkTableModel.findByIdAndUpdate(firstRecord._id, {
+        status: 'FAILED',
+        message: 'Failed during gem assignment',
+      });
+    }
+  }
+
+  startPurchaseCron() {
+    const job = this.schedulerRegistry.getCronJob('purchaseCron');
+    if (job.running) {
+      console.log('Cron already running — skip start.');
+      return;
+    }
+    job.start();
+    console.log('Cron Started');
+  }
+
+  stopPurchaseCron() {
+    const job = this.schedulerRegistry.getCronJob('purchaseCron');
+    job.stop();
+    console.log('Cron Stopped');
   }
 
   purchasePayload(gemsPackage: any, paymentData: any, userId: string, paymentDto: PaymentDto) {
@@ -2067,6 +2690,7 @@ export class UsersService {
 
     if (updatedUserDto.email) { // user updating email means profile completed
       finalDataToUpdate['isExistUser'] = true;
+      finalDataToUpdate['profileCompleted'] = true;
     }
 
     return await this.UsersModel.findByIdAndUpdate(
@@ -2074,6 +2698,18 @@ export class UsersService {
       finalDataToUpdate,
       { new: true, runValidators: true }
     ).exec();
+  }
+
+  async updateLMSTopicsToUserModel(id: string, topicId: string): Promise<User> {
+    const user = await this.UsersModel.findById(id);
+    if (user.isLmsUser) {
+      return await this.UsersModel.findByIdAndUpdate(
+        id,
+        { $addToSet: { purchasedTopics: topicId } },
+        { new: true }
+      ).exec();
+    }
+    return;
   }
 
   async delete(id: string, auth: any): Promise<User> {
@@ -2631,6 +3267,281 @@ export class UsersService {
     }
   }
 
+  async generateLMSUserOtp(loginDto: LoginDto) {
+    let generatedOTP = '';
+
+    if (_.isEmpty(loginDto.email)) {
+      return 'FAILED';
+    }
+
+    const userData = await this.UsersModel.findOne({
+      email: loginDto.email,
+      status: { $ne: 'DELETED' },
+    });
+
+    if (!userData) {
+      return 'USER NOT FOUND';
+    }
+
+    if (userData && userData.status === 'INACTIVE') {
+      return 'INACTIVE';
+    }
+
+    // Send email if enabled
+    const sendEmail = process.env.SEND_EMAIL;
+    if (sendEmail === 'true') {
+      generatedOTP = String(Math.floor(1000 + Math.random() * 9000));
+
+      try {
+        const templateData = {
+          otp: generatedOTP,
+        };
+
+        await this.emailService.sendMail(
+          loginDto.email,
+          'Verify your identity',
+          'USER_LOGIN',
+          templateData
+        );
+
+      } catch (error) {
+        console.log(error)
+        return 'OTP_FAILED';
+      }
+    }
+    // Save OTP record
+    await new this.OtpModel({
+      email: loginDto.email,
+      otp: generatedOTP,
+      status: 'PENDING',
+    }).save();
+
+    return 'SUCCESS';
+  }
+
+  async validateLMSUserOtp(otpDto: OtpDto) {
+    if (!_.isEmpty(otpDto.email)) {
+      if (!otpDto.email) { // if email not present
+        console.log("Validate OTP: email not found.");
+        return false;
+      }
+  
+      if (!otpDto.otp) {// if otp not present
+        console.log("Validate OTP: otp not found.");
+        return false;
+      }
+
+      const userData = await this.UsersModel.findOne({ email: otpDto.email, status: { $ne: 'DELETED' } });
+      if (userData && userData?.status === "INACTIVE") { // if user is inactive
+        return { status: 'INACTIVE' };
+      }
+      const otpData: any[] = await this.OtpModel.find({ email: otpDto.email, status: 'PENDING' }).limit(1).sort({ createdAt: -1 });
+      if (!otpData.length) {// if email not present in otp table
+        return false;
+      }
+      const expireTime = moment.utc(otpData[0]?.createdAt).add(10, 'minutes');
+      const currentTime = moment.utc();
+
+      if (currentTime.isAfter(expireTime)) { // otp expired
+        this.OtpModel.updateOne({ _id: otpData[0]._id }, { status: 'EXPIRED' }).then(() => { });
+        return { status: 'OTP_EXPIRED'};
+      }
+
+      if (otpData[0].otp !== otpDto.otp) { // if otp is invalid
+        return { status: 'INVALID_OTP'};
+      }
+
+      this.OtpModel.updateOne({ _id: otpData[0]._id }, { status: 'VERIFIED' }).then(() => { });
+
+      if (!userData) {// user not present or deleted already
+        const becameMember = await this.achievementsModel.findOne({ keyName: 'BECOME_MEMBER' });
+
+        const newUserPayload: any = { // saving as new user
+          email: otpDto.email,
+          isExistUser: false,
+          gemValue: becameMember.gemValue,
+          xpValue: becameMember.xpValue,
+          megathilPoints: becameMember.megathilPoints,
+          status: 'ACTIVE',
+          source: 'MOBILE',
+          referralCode: generateReferralCode(),
+          lmsSource: 'LMS_WEB',
+          isLmsUser: true
+        };
+
+        const newUser = await this.UsersModel.create(newUserPayload);
+        this.userEarningsModel.create({//saving user earings while creating user
+          userId: newUser._id.toString(),
+          activity: "Bonus gems LMS",
+          action: "registered",
+          reason: 'Bonus gems for becoming a Megathil user.',
+          gemValue: becameMember.gemValue,
+          xpValue: becameMember.xpValue,
+          megathilValue: becameMember.megathilPoints,
+          earnedOrSpent: 'AWARDED',
+        }).then(() => { });
+
+        this.transactionModel.create({//saving transaction while creating user
+          item: "GEMS",
+          quantity: becameMember.gemValue,
+          userId: newUser._id,
+          refNumber: null,
+          payment: null,
+          reason: 'Awarded gems as the welcome bonus.',
+          status: 'SUCCESS'
+        }).then(() => { });
+
+        this.logUserActivity({
+          userId: newUser._id.toString(),
+          activity: "Become LMS User",
+          action: "become_LMS_user",
+          shortDescription: 'become lms user',
+        }).then(() => { });
+
+        this.LoginHistoryModule.create({
+          userId: newUser._id,
+          loginTime: moment.utc(),
+          status: 'ACTIVE'
+        }).then(() => { });
+
+        this.initiateUserProgressStatus(newUser.id).then(() => { });
+        this.initiateOrUpdateUserUnitStatus(newUser.id).then(() => { });
+        return newUser
+      }
+
+
+      if (userData && userData._id) { // user already exist for mobile number
+        this.checkExistingUserUnitTwoStatus(userData._id).then(() => { });
+        this.LoginHistoryModule.create({
+          userId: userData._id,
+          loginTime: moment.utc(),
+          status: 'ACTIVE'
+        }).then(() => { });
+
+        this.logUserActivity({
+          userId: userData._id.toString(),
+          activity: "Logged In LMS User",
+          action: "logged_in",
+          shortDescription: 'logged in',
+        }).then(() => { });
+
+        if(userData.isExistUser === true && userData.isLmsUser === false){
+          await this.UsersModel.findOneAndUpdate({ _id: userData._id }, { isLmsUser: true, lmsSource: 'LMS_WEB', lmsUserType: 'BASIC' }, { new: true }).exec();
+        }
+
+        if (userData.firstName) { // user updating firstName means profile completed
+          return await this.UsersModel
+            .findOneAndUpdate({ _id: userData._id }, {
+              isExistUser: true,
+            }, { new: true })
+            .exec();
+        }
+        return await this.UsersModel
+          .findOneAndUpdate({ _id: userData._id }, { isExistUser: false }, { new: true })
+          .exec();
+      }
+    } else {
+      return false;
+    }
+  }
+
+  async validateAndcreateUsers(signUpDto: SignUpDto) {
+      const userData = await this.UsersModel.findOne({ email: signUpDto.email, status: { $ne: 'DELETED' } });
+      if (userData && userData?.status === "INACTIVE") { // if user is inactive
+        return { status: 'INACTIVE' };
+      }
+
+      if (!userData) {// user not present or deleted already
+        const becameMember = await this.achievementsModel.findOne({ keyName: 'BECOME_MEMBER' });
+
+        const newUserPayload: any = { // saving as new user
+          email: signUpDto.email,
+          isExistUser: true,
+          gemValue: becameMember.gemValue,
+          xpValue: becameMember.xpValue,
+          megathilPoints: becameMember.megathilPoints,
+          status: 'ACTIVE',
+          source: 'MOBILE',
+          referralCode: generateReferralCode(),
+          lmsSource: 'LMS_WEB',
+          isLmsUser: true,
+          profileCompleted: false,
+          firstName: signUpDto.firstName,
+          lastName: signUpDto.lastName,
+          dob: signUpDto.dob,
+          mobileNumber: signUpDto.mobileNumber,
+          mobileCode: signUpDto.mobileCode,
+          gender: signUpDto.gender,
+        };
+
+        const newUser = await this.UsersModel.create(newUserPayload);
+        this.userEarningsModel.create({//saving user earings while creating user
+          userId: newUser._id.toString(),
+          activity: "Bonus gems LMS",
+          action: "registered",
+          reason: 'Bonus gems for becoming a Megathil user.',
+          gemValue: becameMember.gemValue,
+          xpValue: becameMember.xpValue,
+          megathilValue: becameMember.megathilPoints,
+          earnedOrSpent: 'AWARDED',
+        }).then(() => { });
+
+        this.transactionModel.create({//saving transaction while creating user
+          item: "GEMS",
+          quantity: becameMember.gemValue,
+          userId: newUser._id,
+          refNumber: null,
+          payment: null,
+          reason: 'Awarded gems as the welcome bonus.',
+          status: 'SUCCESS'
+        }).then(() => { });
+
+        this.logUserActivity({
+          userId: newUser._id.toString(),
+          activity: "Become LMS User",
+          action: "become_LMS_user",
+          shortDescription: 'become lms user',
+        }).then(() => { });
+
+        this.LoginHistoryModule.create({
+          userId: newUser._id,
+          loginTime: moment.utc(),
+          status: 'ACTIVE'
+        }).then(() => { });
+
+        this.initiateUserProgressStatus(newUser.id).then(() => { });
+        this.initiateOrUpdateUserUnitStatus(newUser.id).then(() => { });
+        return newUser
+      }
+
+      if (userData && userData._id) { // user already exist for mobile number
+        this.checkExistingUserUnitTwoStatus(userData._id).then(() => { });
+        this.LoginHistoryModule.create({
+          userId: userData._id,
+          loginTime: moment.utc(),
+          status: 'ACTIVE'
+        }).then(() => { });
+
+        this.logUserActivity({
+          userId: userData._id.toString(),
+          activity: "Logged In LMS User",
+          action: "logged_in",
+          shortDescription: 'logged in',
+        }).then(() => { });
+
+        if (userData.firstName) { // user updating firstName means profile completed
+          return await this.UsersModel
+            .findOneAndUpdate({ _id: userData._id }, {
+              isExistUser: true,
+            }, { new: true })
+            .exec();
+        }
+        return await this.UsersModel
+          .findOneAndUpdate({ _id: userData._id }, { isExistUser: false }, { new: true })
+          .exec();
+      }
+  }
+
   async checkExistingUserUnitTwoStatus(userId: any) {
     const units = await this.unitModel.find({ status: 'ACTIVE' });
     const unitTwo: any[] = units.filter((i) => i.displayOrder == '2');
@@ -3000,7 +3911,7 @@ export class UsersService {
     return userRanks;
   }
 
-  async parseFile(filePath: string, authRole: any, authId: any, collegeId: any, userType: any) {
+  async parseFile(filePath: string, authRole: any, authId: any, collegeId: any, userType: any, isLmsUser: boolean, lmsUserType: any) {
     const fileExtension = filePath.split('.').pop();
     let data: any[] = [];
 
@@ -3054,6 +3965,11 @@ export class UsersService {
         status: 'ACTIVE',
         userType: collegeId && userType === 'PREMIUM' ? "PREMIUM" : "BASIC"
       };
+      if (isLmsUser) {
+        newUser.isLmsUser = isLmsUser;
+        newUser.lmsSource = 'LMS_ADMIN';
+        newUser.lmsUserType = lmsUserType;
+      }
       // usersToInsert.push(newUser);
       const existingUser = await this.findUserForExistance({ email: result.email, mobileNumber: result.mobileNumber });
       if (existingUser && existingUser.id) {

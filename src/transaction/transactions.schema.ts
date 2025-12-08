@@ -29,6 +29,12 @@ export class Transaction extends mongoose.Document {
   @Prop({ enum: ['SUCCESS', 'FAILED', 'CANCELLED', 'PENDING'], default: 'PENDING' })
   status: string;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Topics' })
+  topicId: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Topics' })
+  offerId: string;
+
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
@@ -39,3 +45,10 @@ TransactionSchema.set('toJSON', {
     return ret;
   },
 });
+TransactionSchema.index(
+  { refNumber: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { refNumber: { $type: "string" } }
+  }
+);

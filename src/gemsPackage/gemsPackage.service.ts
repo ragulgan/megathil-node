@@ -136,7 +136,11 @@ export class GemsPackageService {
       const matchConditions: any = {
         status: 'ACTIVE',
         validStartDate: { $lte: endOfDay },
-        validEndDate: { $gte: endOfDay }
+        validEndDate: { $gte: endOfDay },
+        $or: [
+          { isLMSOffer: { $ne: true } }, // Explicitly check for false
+          { isLMSOffer: { $exists: false } } // Handle documents without the isLMSOffer field
+        ]
       };
       const collegeOffers = collegeId ? 
       await this.carouselModel
@@ -153,7 +157,7 @@ export class GemsPackageService {
           .populate('promotorId', 'id firstName lastName promotedCode') : 
       [];
       const generalOffers = await this.carouselModel
-      .find({ ...matchConditions, college: null, promotorId: null, promoCode: { $nin: appliedPromoCodes } })
+      .find({ ...matchConditions, college: { $eq: null }, promotorId: { $eq: null }, promoCode: { $nin: appliedPromoCodes } })
       .sort({ displayOrder: 1 })
       .select('title note imageUrl displayOrder status percentage validStartDate validEndDate promoCode');
       return [...collegeOffers, ...generalOffers, ...promotorOffers];
@@ -163,7 +167,7 @@ export class GemsPackageService {
     const limit = Number(queryParams.limit) || 10;
     const page = Number(queryParams.page) || 1;
     const skipValue = (page - 1) * limit;
-    let match: any = { status: 'ACTIVE' };
+    let match: any = { status: 'ACTIVE',  isLMSOffer: {$ne: true}};
     const ObjectId = mongoose.Types.ObjectId;
     if (queryParams.status) {
       match.status = queryParams.status;
@@ -175,11 +179,15 @@ export class GemsPackageService {
     if (queryParams.promotorId) {
       match.promotorId = new ObjectId(queryParams.promotorId);
     }
+    if (queryParams.isLMSOffer !== undefined) {
+      match.isLMSOffer = queryParams.isLMSOffer === 'true';
+    }
     const carousels = await this.carouselModel.find(match).sort({ createdAt: -1 })
       .skip(skipValue)
       .limit(limit)
       .populate('college', 'id name collegeLogo')
       .populate('promotorId', 'id firstName lastName promotedCode')
+      .populate('topicsId', 'id topicName imageUrl description')
       .exec();
     const count = await this.carouselModel.countDocuments(match).exec();
 
@@ -187,7 +195,7 @@ export class GemsPackageService {
   }
 
   async getCarouselById(id: string) {
-    return await this.carouselModel.findOne({ _id: id, status: { $ne: 'DELETED' } }).populate('college', 'id name collegeLogo').populate('promotorId', 'id firstName lastName promotedCode');
+    return await this.carouselModel.findOne({ _id: id, status: { $ne: 'DELETED' } }).populate('college', 'id name collegeLogo').populate('promotorId', 'id firstName lastName promotedCode').populate('topicsId', 'id topicName imageUrl description');
   }
 
   async updateCarousel(id: string, carouselDto: CarouselDto) {

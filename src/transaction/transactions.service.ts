@@ -6,6 +6,7 @@ import { CreateTransactionDto } from './dto/createTransactions.dto';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 const mongoose = require('mongoose');
+const Razorpay = require('razorpay');
 
 @Injectable()
 export class TransactionService {
@@ -13,18 +14,57 @@ export class TransactionService {
     @InjectModel(Transaction.name) private TransactionModel: Model<Transaction>,
   ) { }
 
+  getSecret(mode: string) {
+    if (mode === 'LIVE') {
+      return {
+        key_id: process.env.RAZORPAY_KEY_ID_LIVE,
+        key_secret: process.env.RAZORPAY_SECRETKEY_LIVE,
+      }
+    }
+    return {
+      key_id: process.env.RAZORPAY_KEY_ID_TEST,
+      key_secret: process.env.RAZORPAY_SECRETKEY_TEST,
+    }
+  }
+
   async create(createTransactionDto: CreateTransactionDto, userId: any): Promise<Transaction> {
     try {
+      const razorpay_payment_id = createTransactionDto.refNumber;
+      
+      if (!razorpay_payment_id) {
+        throw new Error('Payment reference number is required');
+      }
+
+      const secretData = this.getSecret(process.env.PAYMENT_MODE);
+      const instance = new Razorpay(secretData);
+      const paymentData = await instance.payments.fetch(razorpay_payment_id);
+      
+      if (!paymentData) {
+        throw new Error('Invalid payment reference number. Payment not found in Razorpay.');
+      }
+
       const transactionData = {
         ...createTransactionDto,
         userId
-      }
+      };
+
       const createdTransaction = new this.TransactionModel(transactionData);
       const data = await createdTransaction.save();
-      return data
+      return data;
     } catch (error) {
-      console.error("Validation Error:", error);
-      throw new Error(`${error.message}`);
+      console.error("Transaction Creation Error:", error);
+      // Extract error message from Razorpay error object
+      let errorMessage = 'Failed to validate payment';
+      if (error?.error?.description) {
+        errorMessage = error.error.description;
+      } else if (error?.description) {
+        errorMessage = error.description;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }  
+      throw new Error(errorMessage);
     }
   }
 
@@ -88,6 +128,24 @@ export class TransactionService {
         $unwind: { path: '$user', preserveNullAndEmptyArrays: true } ,
       },
       {
+      $lookup: {
+          from: 'topics',
+          localField: 'topicId',
+          foreignField: '_id',
+          as: 'topic'
+        }
+      },
+      { $unwind: { path: '$topic', preserveNullAndEmptyArrays: true } },
+      {
+      $lookup: {
+          from: 'gemspackagecarousels',
+          localField: 'offerId',
+          foreignField: '_id',
+          as: 'offer'
+        }
+      },
+      { $unwind: { path: '$offer', preserveNullAndEmptyArrays: true } },
+      {
         $match: userMatch
       },
       {
@@ -117,6 +175,26 @@ export class TransactionService {
             email: '$user.email',
             mobileNumber: '$user.mobileNumber',
             profileImage: '$user.profileImage'
+          },
+          topic: {
+            id: '$topic._id',
+            topicName: '$topic.topicName',
+            imageUrl: '$topic.imageUrl',
+            description: '$topic.description',
+            price: '$topic.price',
+            topicSource: '$topic.topicSource',
+            status: '$topic.status'
+          },
+          offer: {
+            id: '$offer._id',
+            title: '$offer.title',
+            note: '$offer.note',
+            promoCode: '$offer.promoCode',
+            percentage: '$offer.percentage',
+            validStartDate: '$offer.validStartDate',
+            validEndDate: '$offer.validEndDate',
+            status: '$offer.status',
+            topicId: '$offer.topicId'
           }
         }
       }

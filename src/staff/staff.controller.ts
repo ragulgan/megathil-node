@@ -117,6 +117,7 @@ export class StaffController {
   @ApiQuery({ name: 'email', required: false, description: 'Return Based on email' })
   @ApiQuery({ name: 'lastName', required: false, description: 'Return Based on lastName' })
   @ApiQuery({ name: 'firstName', required: false, description: 'Return Based on firstName' })
+  @ApiQuery({ name: 'isLmsAdmin', required: false, description: 'Filter by LMS Admin (true/false)' })
   @Get()
   async findAll(@Query() queryParams: { limit?: number; skip?: number }, @Res() res: any) {
     try {

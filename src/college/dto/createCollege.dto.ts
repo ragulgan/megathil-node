@@ -25,4 +25,12 @@ export class CreateCollegeDto {
   @ApiProperty({ example: '6639d0b1c328bf3fe52af89e', description: 'Institute ID' })
   @IsOptional()
   readonly instituteId: string;
+
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  readonly isLmsCollege: boolean;
+
+  @ApiProperty({ example: ['66337243078cdeef0c68ba70', '663372c197da03ab6d864053'], description: 'Topics ID' })
+  @IsOptional()
+  readonly topicsId: string[];
 }

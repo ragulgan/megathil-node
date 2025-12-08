@@ -54,6 +54,13 @@ import { ConfigJsonModule } from './config-json/config-json.module';
 import { InstituteModule } from './institute/institute.module'
 import { MobilecodeJsonModule } from './mobilecode-json/mobilecode-json.module';
 import { PromotorModule } from './Promotors/promotor.module'
+import { TopicsModule } from './topics/topics.module';
+import { SubTopicsModule } from './sup-topics/sub-topics.module';
+import { SubTopics1Module } from './sub-topics1/sub-topic1.module';
+import { TestLevelModule } from './lmsTest/lmsTest.module';
+import { LmsQuestionModule } from './lmsQuestion/lmsQuestion.module';
+import { LmsOptionModule } from './lmsOption/lmsOption.module';
+import { LmsQuestionResponseModule } from './lmsQuestionResponse/lmsQuestionResponse.module';
 
 @Module({
   imports: [
@@ -114,7 +121,14 @@ import { PromotorModule } from './Promotors/promotor.module'
     ConfigJsonModule,
     InstituteModule,
     MobilecodeJsonModule,
-    PromotorModule
+    PromotorModule,
+    TopicsModule,
+    SubTopicsModule,
+    SubTopics1Module,
+    TestLevelModule,
+    LmsQuestionModule,
+    LmsOptionModule,
+    LmsQuestionResponseModule
   ],
   controllers: [AppController],
   providers: [AppService],

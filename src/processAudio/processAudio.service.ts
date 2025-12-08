@@ -17,6 +17,8 @@ import { UserScores } from "src/users/userScores.schema";
 import { userLearningHistory } from "src/userUnitHistory/userUnitHistory.schema";
 import { calculateMegathilPoints, generateCertificateId } from "src/utill/utill";
 import { CertificateDTO } from "./dto/certificate.dto";
+import { CertificateService } from "src/certificateGeneration/certificate/certificate.service";
+import { MailService } from "src/certificateGeneration/mail/mail.service";
 const mongoose = require('mongoose');
 const moment = require('moment');
 
@@ -40,7 +42,9 @@ export class ProcessAudioService {
     @InjectModel(UserActivity.name) private userActivityModel: Model<UserActivity>,
     @InjectModel(UserScoreHistories.name) private userScoreHistoryModel: Model<UserScoreHistories>,
     @InjectModel(Unit.name) private unitsModel: Model<Unit>,
-    private httpService: HttpService
+    private httpService: HttpService,
+    private readonly certificateService: CertificateService,
+    private readonly mailService: MailService,
   ) { }
 
   async getUserById(userId: string) {
@@ -188,7 +192,7 @@ export class ProcessAudioService {
           if ((userProgressStatusDto.completedInstructionsCount + userProgressStatusDto.completedQuestionsCount) >= (instructionsCount + questionsCount)) { // check module completed
             userProgressStatusDto.status = 'COMPLETED';
 
-            this.checkAndIssueCertificate(body?.unitId, body?.moduleId, decodedToken.id, decodedToken).then(() => { }).catch((e) => { console.log("Error:", e) });
+            this.checkAndIssueCertificate(body?.unitId, body?.moduleId, decodedToken.id, decodedToken, body?.questionId).then(() => { }).catch((e) => { console.log("Error:", e) });
 
             const accuracyPercentage = (score / 200) * 100;
 
@@ -327,7 +331,7 @@ export class ProcessAudioService {
     return true;
   }
 
-  async checkAndIssueCertificate(unitId: string, moduleId: string, userId: string, decodedToken: any) {
+  async checkAndIssueCertificate(unitId: string, moduleId: string, userId: string, decodedToken: any, questionId: any) {
     try {
       const user = await this.usersModel.findById(decodedToken.id);
       if (!user.certificateIssued) {
@@ -349,9 +353,6 @@ export class ProcessAudioService {
           ]);
 
           const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-          const referralCode = generateCertificateId();
-          const issuedOn = moment().format("DD-MMM-YYYY");
-          const validTill = moment().add(1, 'year').format("DD-MMM-YYYY");
 
           const userScores = await this.userScoreHistoryModel.aggregate([
             {
@@ -382,58 +383,54 @@ export class ProcessAudioService {
             const totalModuleMVP = userScores[0].totalModuleMVP;
 
             percentageScore = (totalScoredMVP / totalModuleMVP) * 100;
-            percentageScore = Math.round(percentageScore); 
+            percentageScore = Math.round(percentageScore);
           }
-
-          const payload = {
-            "is_cert_required": true,
-            "schema_name": process.env.DICE_ID_SCHEMA,
-            "schema_version": process.env.DICE_ID_SCHEMA_VERSION,
-            "invite_modes": ["email"],
-            "invitee_name": "Megathil",
-            "email": {
-              "invitee_email": decodedToken.email,
-              "email_template_id": process.env.DICE_ID_EMAIL_TEMPLATE_ID
-            },
-            "template_id": process.env.DICE_ID_EMAIL_TEMPLATE_ID,
-            "attributes": {
-              "Certificate ID": referralCode,
-              "dice_display_name": "AI-Powered Interview Preparation Program",
-              "Valid Till": validTill,
-              "Skill Name": "NEST",
-              "Name": `${capitalize(decodedToken.firstName)} ${capitalize(decodedToken.lastName)}`,
-              "Issued On": issuedOn,
-              "Score": "A GRADE",
-              "Cert Level": "Course Completed",
-              "User ID": userId,
-              "Issued By": "WIPRO DICE ID",
-              "Email": decodedToken.email,
-              "Phone": `+91${decodedToken.mobileNumber}`
-            }
-          };
+          const fullName = `${capitalize(decodedToken.firstName)} ${capitalize(decodedToken.lastName)}`;
 
           if (lastModule.length && lastModule[0]._id.toString() === moduleId) {
-            const apiKey = process.env.DICE_ID_API_KEY;
-            const orgId = process.env.DICE_ID_ORG_ID;
-            const invokedBy = process.env.DICE_ID_INVOKED_BY;
+            const lastQuestion = await this.questionModel.aggregate([
+              {
+                $match: {
+                  status: 'ACTIVE',
+                  moduleId: new ObjectId(moduleId),
+                }
+              },
+              {
+                $lookup: {
+                  from: 'questiontypes',
+                  localField: 'questionType',
+                  foreignField: '_id',
+                  as: 'questionType'
+                }
+              },
+              { $unwind: "$questionType" },
+              {
+                $match: {
+                  "questionType.displayValue": { $in: ["moduleInstruction", "Modulequestions"] }
+                }
+              },
+              { $addFields: { displayOrderNum: { $toInt: "$displayOrder" } } },
+              { $sort: { displayOrderNum: -1 } },
+              { $limit: 1 }
+            ]);
 
-            const authToken = await this.getAuthToken(apiKey, orgId, invokedBy);
-            if (authToken) {
-              const issueResponse = await this.issueCredential(apiKey, orgId, invokedBy, authToken, payload);
-              if (issueResponse?.data?.status === 'Success') {
-                const certificateRef = issueResponse.data.result.record_id;
+            const lastQuestionId = lastQuestion[0]?._id.toString();
+            if (lastQuestionId && questionId === lastQuestionId) {
+              try {
+                const { filePath: certPath } = await this.certificateService.generate(userId, fullName);
+                await this.mailService.sendCertificate(decodedToken.email, fullName, certPath);
+
                 await this.usersModel.updateOne(
                   { _id: userId },
                   {
                     $set: {
                       certificateIssued: true,
-                      certificateRef: certificateRef
                     }
                   }
                 );
+              } catch (err) {
+                console.error('Certificate generation/email failed:', err);
               }
-            } else {
-              console.error("Auth token not received. Skipping certificate issuance.");
             }
           }
         }
@@ -443,51 +440,4 @@ export class ProcessAudioService {
     }
   }
 
-  async getAuthToken(apiKey: string, orgId: string, invokedBy: string): Promise<string> {
-    const headers = {
-      'invoked_by': invokedBy,
-      'org_id': orgId,
-      'x-api-key': apiKey,
-    };
-
-    try {
-      const response: AxiosResponse<any> = await lastValueFrom(this.httpService.get(process.env.DICE_ID_TOKEN_URL, { headers }));
-      if (response.data && response.data.result && response.data.result.token) {
-        return response.data.result.token;
-      } else {
-        throw new Error('Token not found in response');
-      }
-    } catch (error) {
-      console.error('Error fetching token:', error.message);
-      throw new Error('Failed to fetch token');
-    }
-  }
-
-  async issueCredential(
-    apiKey: string,
-    orgId: string,
-    invokedBy: string,
-    authToken: string,
-    payload: CertificateDTO
-  ): Promise<AxiosResponse<any>> {
-    const headers = {
-      'x-api-key': apiKey,
-      'Org_id': orgId,
-      'Invoked_by': invokedBy,
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${authToken}`
-    };
-
-    try {
-      return await lastValueFrom(this.httpService.post(process.env.DICE_ID_CREDENTIAL_ISSUANCE_URL, payload, { headers }));
-    } catch (error) {
-      if (error.response) {
-        console.error('API Error Response:', error.response.data);
-        console.error('Status Code:', error.response.status);
-      } else {
-        console.error('Error Message:', error.message);
-      }
-      throw new Error('Failed to issue credential');
-    }
-  }
 }

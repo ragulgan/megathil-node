@@ -102,6 +102,18 @@ export class CreateUserDto {
   readonly createdBy: string;
 
   readonly updatedBy: string;
+
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  readonly isLmsUser: boolean;
+
+  @ApiProperty({ example: 'BASIC or PREMIUM', required: false })
+  @IsOptional()
+  readonly lmsUserType?: string;
+
+  @ApiProperty({ example: 'LMS_ADMIN or LMS_WEB', required: false })
+  @IsOptional()
+  readonly lmsSource?: string;
 }
 
 export class BulkUploadFileDto {
@@ -116,4 +128,16 @@ export class BulkUploadFileDto {
   @ApiProperty({ example: '6639d0b1c328bf3fe52af89e', description: 'College ID associated with the user', required: false })
   @IsOptional()
   readonly collegeId?: string;
+
+ @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  readonly isLmsUser: boolean;
+
+  @ApiProperty({ example: 'BASIC or PREMIUM', required: false })
+  @IsOptional()
+  readonly lmsUserType?: string;
+
+  @ApiProperty({ example: 'LMS_ADMIN or LMS_WEB', required: false })
+  @IsOptional()
+  readonly lmsSource?: string;
 }

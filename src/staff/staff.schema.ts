@@ -65,6 +65,9 @@ export class Staff {
 
   @Prop()
   updatedBy: string;
+
+  @Prop({ type: Boolean, default: false })
+  isLmsAdmin: boolean;
 }
 
 export const StaffSchema = SchemaFactory.createForClass(Staff);

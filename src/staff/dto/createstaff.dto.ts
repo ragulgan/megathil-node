@@ -49,4 +49,7 @@ export class CreateStaffDto {
   @IsString()
   @IsNotEmpty({ message: 'Status should not be empty' })
   readonly status: string;
+
+  @ApiProperty({ example: false, required: false })
+  readonly isLmsAdmin: boolean;
 }

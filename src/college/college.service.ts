@@ -37,6 +37,9 @@ export class CollegeService {
     if (queryParams.institute) {
       match['instituteId'] = new ObjectId(queryParams.institute)
     }
+    if (queryParams.isLmsCollege !== undefined) {
+      match.isLmsCollege = queryParams.isLmsCollege === 'true';
+    }
     return await this.CollegeModel.find(match).select("id name collegeLogo").collation({ locale: 'en', strength: 1 }).sort({ name: 1 });
   }
 
@@ -56,6 +59,10 @@ export class CollegeService {
 
     if (queryParams.institute) {
       match['instituteId'] = new ObjectId(queryParams.institute)
+    }
+
+    if (queryParams.isLmsCollege !== undefined) {
+      match.isLmsCollege = queryParams.isLmsCollege === 'true';
     }
 
     const CollegeList = await this.CollegeModel.aggregate([
@@ -144,7 +151,9 @@ export class CollegeService {
           createdAt: 1,
           userCount: 1,
           staffCount: 1,
-          instituteId: 1
+          instituteId: 1,
+          isLmsCollege: 1,
+          topicsId: 1
         },
       },
     ]);
@@ -242,7 +251,9 @@ export class CollegeService {
           staffCount: 1,
           premiumUserUtilized: 1,
           premiumUserAlloted: 1,
-          instituteId: 1
+          instituteId: 1,
+          isLmsCollege: 1,
+          topicsId: 1
         },
       },
     ]).exec();

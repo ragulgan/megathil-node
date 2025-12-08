@@ -292,6 +292,7 @@ export class UsersController {
   @ApiQuery({ name: 'page', required: false, })
   @ApiQuery({ name: 'limit', required: false, })
   @ApiQuery({ name: 'sort', required: false, })
+  @ApiQuery({ name: 'isLmsUser', required: false, description: 'Filter by LMS User (true/false)' })
   @ApiQuery({ name: 'userType', required: false, description: 'Return Based on user type' })
   @ApiQuery({ name: 'promotedBy', required: false, description: 'Return Based on promoted code' })
   @ApiQuery({ name: 'status', required: false, description: 'Return Based on status' })
@@ -331,11 +332,81 @@ export class UsersController {
     }
   }
 
+  @UseGuards(StaffAdminGuard)
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'page', required: false, })
+  @ApiQuery({ name: 'limit', required: false, })
+  @ApiQuery({ name: 'sort', required: false, })
+  @ApiQuery({ name: 'lmsSource', required: false, description: 'Return Based on lms user source LMS_ADMIN/LMS_WEB' })
+  @ApiQuery({ name: 'lmsUserType', required: false, description: 'Return Based on lms user type BASIC/PREMIUM' })
+  @ApiQuery({ name: 'status', required: false, description: 'Return Based on status' })
+  @ApiQuery({ name: 'departmentId', required: false, description: 'Filters by department using department id.', type: [String] })
+  @ApiQuery({ name: 'courseId', required: false, description: 'Filters by course using course id.', type: [String] })
+  @ApiQuery({ name: 'collegeId', required: false, description: 'Filters by college using college id.', type: [String] })
+  @ApiQuery({ name: 'email', required: false, description: 'Return Based on email' })
+  @ApiQuery({ name: 'mobileNumber', required: false, description: 'Return Based on mobileNumber' })
+  @ApiQuery({ name: 'lastName', required: false, description: 'Return Based on lastName' })
+  @ApiQuery({ name: 'firstName', required: false, description: 'Return Based on firstName' })
+  @Get('lmsMainAdmin/users')
+  async findAllLMSUser(@Query() queryParams: { limit?: number; skip?: number }, @Request() req, @Res() res: any) {
+    try {
+      const getUser = await this.usersService.findAllLmsUsers(queryParams);
+      if (!_.isEmpty(getUser.userList)) {
+        this.responseService.sendResponse({}, res, SUCCESS.CODE, {
+          code: '1004',
+          data: getUser.userList,
+          count: getUser.count
+        }, '1004');
+      }
+      else {
+        this.responseService.sendResponse({}, res, SUCCESS.CODE, { code: '1005', data: [], count: getUser.count }, '1005')
+      }
+    } catch {
+      throw new BadRequestException();
+    }
+  }
+
   @UseGuards(StaffGuard)
   @ApiBearerAuth()
   @ApiQuery({ name: 'page', required: false, })
   @ApiQuery({ name: 'limit', required: false, })
   @ApiQuery({ name: 'sort', required: false, })
+  @ApiQuery({ name: 'lmsSource', required: false, description: 'Return Based on lms source LMS_ADMIN/LMS_WEB' })
+  @ApiQuery({ name: 'lmsUserType', required: false, description: 'Return Based on lms user type BASIC/PREMIUM' })
+  @ApiQuery({ name: 'status', required: false, description: 'Return Based on status' })
+  @ApiQuery({ name: 'departmentId', required: false, description: 'Filters by department using department id.', type: [String] })
+  @ApiQuery({ name: 'courseId', required: false, description: 'Filters by course using course id.', type: [String] })
+  @ApiQuery({ name: 'collegeId', required: false, description: 'Filters by college using college id.', type: [String] })
+  @ApiQuery({ name: 'email', required: false, description: 'Return Based on email' })
+  @ApiQuery({ name: 'mobileNumber', required: false, description: 'Return Based on mobileNumber' })
+  @ApiQuery({ name: 'lastName', required: false, description: 'Return Based on lastName' })
+  @ApiQuery({ name: 'firstName', required: false, description: 'Return Based on firstName' })
+  @Get('staffLogin/lms/user')
+  async findAllStaffLoginLmsUsers(@Query() queryParams: { limit?: number; skip?: number }, @Request() req, @Res() res: any) {
+    try {
+      const decodedToken = verifyAndExtractToken(req.headers);
+      const getUser = await this.usersService.findAllStaffLoginLmsUser(queryParams, decodedToken.id);
+      if (!_.isEmpty(getUser.userList)) {
+        this.responseService.sendResponse({}, res, SUCCESS.CODE, {
+          code: '1004',
+          data: getUser.userList,
+          count: getUser.count
+        }, '1004');
+      }
+      else {
+        this.responseService.sendResponse({}, res, SUCCESS.CODE, { code: '1005', data: [], count: getUser.count }, '1005')
+      }
+    } catch {
+      throw new BadRequestException();
+    }
+  }
+
+  @UseGuards(StaffGuard)
+  @ApiBearerAuth()
+  @ApiQuery({ name: 'page', required: false, })
+  @ApiQuery({ name: 'limit', required: false, })
+  @ApiQuery({ name: 'sort', required: false, })
+  @ApiQuery({ name: 'isLmsUser', required: false, description: 'Filter by LMS User (true/false)' })
   @ApiQuery({ name: 'source', required: false, description: 'Return Based on source WEB/MOBILE' })
   @ApiQuery({ name: 'userType', required: false, description: 'Return Based on user type' })
   @ApiQuery({ name: 'promotedBy', required: false, description: 'Return Based on promoted code' })
@@ -382,6 +453,7 @@ export class UsersController {
   @ApiQuery({ name: 'page', required: false, })
   @ApiQuery({ name: 'limit', required: false, })
   @ApiQuery({ name: 'sort', required: false, })
+  @ApiQuery({ name: 'isLmsUser', required: false, description: 'Filter by LMS User (true/false)' })
   @ApiQuery({ name: 'source', required: false, description: 'Return Based on source WEB/MOBILE' })
   @ApiQuery({ name: 'userType', required: false, description: 'Return Based on user type' })
   @ApiQuery({ name: 'promotedBy', required: false, description: 'Return Based on promoted code' })
@@ -768,6 +840,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(UserGuard)
+  @ApiBearerAuth()
   @Post('purchase')
   async getUserGemsPurchase(@Body() paymentDto: PaymentDto, @Request() req: any, @Res() res: any) {
     try {
@@ -801,7 +875,7 @@ export class UsersController {
     @Res() res: any,
   ) {
     const decodedToken = verifyAndExtractToken(req.headers);
-    const { userType, collegeId } = req.body;
+    const { userType, collegeId, isLmsUser, lmsUserType } = req.body;
 
     if (userType === 'PREMIUM') {
       if (!collegeId) {//collegeId is required when user is PREMIUM
@@ -822,7 +896,7 @@ export class UsersController {
       return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '5014' }, '5014');
     }
     try {
-      const result: any = await this.usersService.parseFile(filePath, decodedToken.id, decodedToken.role, collegeId, userType);
+      const result: any = await this.usersService.parseFile(filePath, decodedToken.id, decodedToken.role, collegeId, userType, isLmsUser, lmsUserType );
       if (result.status === 'success') {
         return this.responseService.sendResponse({}, res, SUCCESS.CODE, { code: result.code, data: result.data }, result.code);
       } else {

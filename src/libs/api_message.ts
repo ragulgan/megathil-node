@@ -35,6 +35,7 @@ export const apimsgconfig = {
     1012: 'Staff updated successfully.',
     1013: 'Staff deleted successfully.',
     1101: 'Invalid email or password.',
+    5114: 'Staff is not LMS Admin.',
 
     //Amdin
     1014: 'Admin logged in successfully.',
@@ -359,7 +360,7 @@ export const apimsgconfig = {
 
     7111: "Config JSON updated successfully.",
     7112: "Mobilecode JSON updated successfully.",
-    
+
     //interviewer
     5100: "User rescheduled successfully.",
 
@@ -377,7 +378,32 @@ export const apimsgconfig = {
 
     //DiceId
     5111: 'Certificate Issued Successfully.',
-    5112: 'Failed to Issue certificate. User has not completed all units.'
+    5112: 'Failed to Issue certificate. User has not completed all units.',
+    5113: 'Certificate file not found',
+
+    //Topics
+    5115: 'Topics created successfully.',
+    5116: 'Topics updated successfully.',
+    5117: 'Topics deleted successfully.',
+
+    //Sub Topics
+    5118: 'Sub Topics created successfully.',
+    5119: 'Sub Topics updated successfully.',
+    5120: 'Sub Topics deleted successfully.',
+
+    //Sub Topics1
+    5121: 'Sub Topics 1 created successfully.',
+    5122: 'Sub Topics 1 updated successfully.',
+    5123: 'Sub Topics 1 deleted successfully.',
+
+    //Test Level
+    5124: 'Test Level created successfully.',
+    5125: 'Test Level updated successfully.',
+    5126: 'Test Level deleted successfully.',
+
+    // users
+    5127: 'User not found',
+    5128: 'The Test was already Completed'
   }
 
 

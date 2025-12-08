@@ -19,6 +19,8 @@ import { UserScores, UserScoresSchema } from 'src/users/userScores.schema';
 import { UserScoreHistories, UserScoreHistoriesSchema } from 'src/users/userScoreHistory.schema';
 import { HttpModule } from '@nestjs/axios';
 import { UserAchievement, UserAchievementSchema } from 'src/users/userAchievement.schema';
+import { MailService } from 'src/certificateGeneration/mail/mail.service';
+import { CertificateService } from 'src/certificateGeneration/certificate/certificate.service';
 
 @Module({
   imports: [
@@ -40,7 +42,7 @@ import { UserAchievement, UserAchievementSchema } from 'src/users/userAchievemen
     HttpModule
   ],
   controllers: [QuestionResponseController],
-  providers: [QuestionResponseService, ResponseService],
+  providers: [QuestionResponseService, ResponseService, MailService, CertificateService],
   exports: [QuestionResponseService],
 })
 export class QuestionResponseModule { }

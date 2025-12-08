@@ -62,7 +62,6 @@ export class OtpDto {
   })
   readonly mobileNumber: string;
 
-  @IsNotEmpty()
   @ApiProperty({
     example: 'abcdef123456',
     required: false,
@@ -255,4 +254,40 @@ export class PromotorLoginDto {
     required: true
   })
   readonly password: string;
+}
+
+export class SignUpDto {
+
+  @ApiProperty({ example: 'delisa' })
+  @IsNotEmpty({ message: 'First name must not be empty' })
+  firstName: string;
+
+  @ApiProperty({ example: 'nivash' })
+  @IsNotEmpty({ message: 'Last name must not be empty' })
+  lastName: string;
+
+  @ApiProperty({
+    example: 'test@gmail.com',
+    required: false
+  })
+  email: string;
+
+  @ApiProperty({
+    example: '+91',
+    required: false
+  })
+  mobileCode: string;
+
+  @ApiProperty({
+    example: '8825662022',
+    required: false
+  })
+  mobileNumber: string;
+
+  @ApiProperty({ example: '2005-05-09T09:52:38Z' })
+  dob: string;
+
+  @ApiProperty({ enum: ['MALE', 'FEMALE', 'OTHER'] })
+  gender: string;
+
 }

@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, Query, Res, BadRequestException, UseGuards, Request } from '@nestjs/common';
 import { TransactionService } from './transactions.service';
+import { UsersService } from 'src/users/users.service';
 import { CreateTransactionDto } from './dto/createTransactions.dto';
 import { ResponseService } from '../base/controller';
 import { ApiTags, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
@@ -15,6 +16,7 @@ export class TransactionController {
   constructor(
     private readonly TransactionService: TransactionService,
     private readonly responseService: ResponseService,
+    private readonly usersService: UsersService,
   ) { }
 
   @UseGuards(JwtAuthGuard)
@@ -26,6 +28,9 @@ export class TransactionController {
     try {
       const createdTransaction = await this.TransactionService.create(createTransactionDto, decodedToken.id);
       if (createdTransaction) {
+        if (createdTransaction.status == 'SUCCESS') {
+          await this.usersService.updateLMSTopicsToUserModel(createdTransaction.userId, createdTransaction.topicId);
+        }
         this.responseService.sendResponse({}, res, SUCCESS.CODE, {
           code: '2005',
           data: {

@@ -18,9 +18,9 @@ export class ResponseService {
     }
   }
 
-  errorResponse(req: any, error: any, messageCode: any) {
+  errorResponse(req: any, error: any, messageCode: any, statusCode=null) {
     const response = this.responseFormat();
-    response.code = ERROR.CODE;
+    response.code = statusCode || ERROR.CODE;
     response.messageCode = messageCode;
     if (_.has(error, 'code')) {
       response.message = apimsgconfig.en[error.code] || error;
@@ -40,9 +40,9 @@ export class ResponseService {
     return response;
   }
 
-  successResponse(req: any, success: any, messageCode: any) {
+  successResponse(req: any, success: any, messageCode: any, statusCode=null) {
     const response = this.responseFormat();
-    response.code = SUCCESS.CODE;
+    response.code = statusCode || SUCCESS.CODE;
     response.messageCode = messageCode;
     if (_.has(success, 'count')) {
       response.count = success.count;
@@ -78,6 +78,21 @@ export class ResponseService {
       response = this.successResponse(req, resToSend, messageCode);
     }
     return res.status(statusCode).json(response);
+  }
+
+  sendLmsResponse(req: any, res: any, statusCode: number, resToSend: any, messageCode: any) {
+    let response = {};
+    if (statusCode !== SUCCESS.CODE) {
+      response = this.errorResponse(req, resToSend, messageCode, statusCode);
+    } else {
+      response = this.successResponse(req, resToSend, messageCode, statusCode);
+    }
+
+    if (statusCode === ERROR.CLIENT_ERROR.BAD_REQUEST) {
+      return res.status(SUCCESS.CODE).json(response);
+    } else {
+      return res.status(statusCode).json(response);
+    }
   }
 }
 

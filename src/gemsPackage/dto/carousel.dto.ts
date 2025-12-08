@@ -20,6 +20,7 @@ export class CarouselDto {
 
   @ApiProperty({ example: 1 })
   @IsNumber()
+  @IsOptional()
   readonly displayOrder: number;
 
   @ApiProperty({ example: 25 })
@@ -47,4 +48,12 @@ export class CarouselDto {
   @ApiProperty({ example: '6639d0b1c328bf3fe52af89e', description: 'Promotor ID' })
   @IsOptional()
   readonly promotorId: string;
+
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  isLMSOffer: boolean;
+
+  @ApiProperty({ example: ['66337243078cdeef0c68ba70', '663372c197da03ab6d864053'], description: 'Topics ID' })
+  @IsOptional()
+  topicsId: string[];
 }

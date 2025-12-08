@@ -15,6 +15,18 @@ export class UserActivity {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Modules' })
   moduleId: string;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Topics' })
+  topicId: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'SubTopics' })
+  subTopicId: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'SubTopics1' })
+  subTopic1Id: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'LmsTest' })
+  testLevelId: string;
+
   @Prop()
   shortDescription: string;
 

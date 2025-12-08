@@ -169,6 +169,10 @@ export class StaffService {
       }
     }
 
+    if (queryParams.isLmsAdmin !== undefined) {
+      match.isLmsAdmin = queryParams.isLmsAdmin === 'true';
+    }
+
     const StaffList = await this.StaffModel.find(match)
       .select("-password")
       .sort({ updatedAt: -1 })

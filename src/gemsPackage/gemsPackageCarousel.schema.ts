@@ -37,6 +37,12 @@ export class GemsPackageCarousel extends mongoose.Document {
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'PromoCode' })
   promotorId: string;
+
+  @Prop({ type: Boolean, default: false })
+  isLMSOffer: boolean;
+
+  @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'Topics', required: false }])
+  topicsId: Array<any>;
 }
 
 export const GemsPackageCarouselSchema = SchemaFactory.createForClass(GemsPackageCarousel);

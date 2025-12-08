@@ -351,7 +351,7 @@ export class EmailService {
       </body>
       </html>
       `,
-    userPurchase: (name: string, message: string, gemValue: string, amount: string) => `
+    userPurchase: (name: string, message: string, gemValue: string, amount: string, currencySymbol: string) => `
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -422,7 +422,7 @@ export class EmailService {
                 <li>${gemValue} (PREMIUM_BONUS)</li>
               </b>
             </td>
-            <td style="text-align: right; font-size: 16px;"><b>$${amount}</b></td>
+            <td style="text-align: right; font-size: 16px;"><b>${currencySymbol}${amount}</b></td>
           </tr>
         </table>
         <!-- Total Amount Section -->
@@ -430,7 +430,7 @@ export class EmailService {
           <tr>
             <th style="font-size: 16px; padding-bottom: 10px; 
           text-align: start;">Total Amount:</th>
-            <th style="text-align: right; font-size: 16px; padding-bottom: 10px;">$${amount}</th>
+            <th style="text-align: right; font-size: 16px; padding-bottom: 10px;">${currencySymbol}${amount}</th>
           </tr>
         </table>
         <!-- Closing Section -->
@@ -1010,7 +1010,7 @@ export class EmailService {
         htmlTemplate = this.emailTemplates.interviewer(templateData.name, templateData.message);
         break;
       case 'USERPURCHASE':
-        htmlTemplate = this.emailTemplates.userPurchase(templateData.name, templateData.message, templateData.gemValue, templateData.amount);
+        htmlTemplate = this.emailTemplates.userPurchase(templateData.name, templateData.message, templateData.gemValue, templateData.amount, templateData.currencySymbol);
         break;
       case 'INTERVIEWERBOOKING':
           htmlTemplate = this.emailTemplates.interviewBooking(templateData.interviewerName, templateData.message, templateData.userName, templateData.date, templateData.time);

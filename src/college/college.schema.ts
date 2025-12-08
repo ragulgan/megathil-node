@@ -27,6 +27,12 @@ export class College extends Document {
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Institute' })
   instituteId: string;
+
+  @Prop({ type: Boolean, default: false })
+  isLmsCollege: boolean;
+
+  @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'Topic', required: false }])
+  topicsId: Array<any>;
 }
 
 export const CollegeSchema = SchemaFactory.createForClass(College);

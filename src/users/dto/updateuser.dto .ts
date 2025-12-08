@@ -103,4 +103,15 @@ export class UpdatedUserDto  {
 
   readonly updatedBy: string;
 
+  @ApiProperty({ example: false, required: false })
+  @IsOptional()
+  readonly isLmsUser: boolean;
+
+  @ApiProperty({ example: 'BASIC or PREMIUM', required: false })
+  @IsOptional()
+  readonly lmsUserType?: string;
+
+  @ApiProperty({ example: 'LMS_ADMIN or LMS_WEB', required: false })
+  @IsOptional()
+  readonly lmsSource?: string;
 }

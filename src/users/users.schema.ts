@@ -183,6 +183,28 @@ export class User {
   @Prop()
   updatedBy: string;
   id: any;
+
+  @Prop({ type: Boolean, default: false })
+  isLmsUser: boolean;
+
+  @Prop({
+    type: String,
+    enum: ['LMS_ADMIN', 'LMS_WEB'],
+  })
+  lmsSource: string;
+
+  @Prop({
+    type: String,
+    enum: ['BASIC', 'PREMIUM'],
+    default: 'BASIC'
+  })
+  lmsUserType: string;
+
+  @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'topics' }])
+  purchasedTopics: MongooseSchema.Types.ObjectId[];
+
+  @Prop({ type: Boolean, default: true })
+  profileCompleted: boolean;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.set('toJSON', {

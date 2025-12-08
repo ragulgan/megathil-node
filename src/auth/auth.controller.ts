@@ -1,11 +1,12 @@
 import { Controller, Post, UseGuards, Body, Res, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
 import { ApiTags, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
-import { LoginDto, OtpDto, AdminDto, StaffLoginDto, InterviewerLoginDto, AdminChangePasswordStaffDto, AdminChangePasswordInterviewerDto, CreateAdminDto, SuperAdminChangePasswordDto, InitiateDto, PromotorLoginDto } from './dto/logindto';
+import { LoginDto, OtpDto, AdminDto, StaffLoginDto, InterviewerLoginDto, AdminChangePasswordStaffDto, AdminChangePasswordInterviewerDto, CreateAdminDto, SuperAdminChangePasswordDto, InitiateDto, PromotorLoginDto, SignUpDto } from './dto/logindto';
 import { ResponseService } from '../base/controller';
 import { appConst } from 'src/libs/constants';
 import { AdminGuard, SuperAdminGuard } from './jwt-auth.guard';
-import { decodeJWTToken } from 'src/utill/utill';
+import { decodeJWTToken, getErrorCode, validateDOB } from 'src/utill/utill';
 const { ERROR, SUCCESS } = appConst;
 
 @ApiTags('Auth')
@@ -14,6 +15,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private readonly responseService: ResponseService,
+    private readonly usersService: UsersService,
   ) { }
 
   @Post('login/user')
@@ -77,6 +79,69 @@ export class AuthController {
     }
     if (result) {
       return this.responseService.sendResponse({}, res, SUCCESS.CODE, {
+        code: '1001',
+        data: {
+          id: result.user._id,
+          email: result.user.email,
+          mobileNumber: result.user.mobileNumber,
+          isExistUser: result.user.isExistUser,
+          status: result.user.status,
+          token: result.token
+        }
+      }, '1001');
+    }
+  }
+
+  @Post('login/lmsUser')
+  @ApiBody({ type: LoginDto })
+  async loginLMSUser(@Body() loginDto: LoginDto, @Res() res) {
+    const result = await this.authService.triggerLMSUserLogin(loginDto);
+    if (result === 'INACTIVE') {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, {
+        code: '1441'
+      }, '1441');
+    }
+     if (result === 'OTP_FAILED') {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '5029' }, '5029');
+    }  
+    if (result === 'FAILED') {
+        return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '2015' }, '2015');
+    }
+    if (result === 'USER NOT FOUND') {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '5127' }, '5127');
+    }
+    if (result === 'SUCCESS') {
+        return this.responseService.sendLmsResponse({}, res, SUCCESS.CODE, { code: '1008'}, '1008');
+    }else {
+        return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '1009' }, '1009');
+    }
+  }
+
+  @Post('validate/lmsUserOtp')
+  @ApiBody({ type: OtpDto })
+  async verifyLMSUser(@Body() otpDto: OtpDto, @Res() res) {
+    const result: any = await this.authService.verifyLMSOtp(otpDto);
+    if (!result) {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '2014' }, '2014');
+    }
+    
+    if (result && result.user && result?.user?.status == 'INACTIVE') {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, {
+        code: '1441'
+      }, '1441');
+    }
+    if (result && result.user && result?.user?.status  === 'OTP_EXPIRED') {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, {
+        code: '2018'
+      }, '2018');
+    }
+    if (result && result.user && result?.user?.status  === 'INVALID_OTP') {
+      return this.responseService.sendLmsResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, {
+        code: '2019'
+      }, '2019');
+    }
+    if (result) {
+      return this.responseService.sendLmsResponse({}, res, SUCCESS.CODE, {
         code: '1001',
         data: {
           id: result.user._id,
@@ -163,6 +228,29 @@ export class AuthController {
       }, '1001');
     } else {
       this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '1101' }, '1101');
+    }
+    return result;
+  }
+
+  @Post('lms/signup')
+  @ApiBody({ type: SignUpDto })
+  async userSignup(@Body() signUpDto: SignUpDto, @Res() res) {
+    const existingUser = await this.usersService.findUserForExistance(signUpDto);
+    if (existingUser) {
+      const code = getErrorCode(existingUser, signUpDto);
+      return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: code }, code);
+    }
+    if (!validateDOB(signUpDto.dob)) {
+      return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '4304' }, '4304');
+    }
+    const result = await this.authService.signupLMSUser(signUpDto);
+    if (result) {
+      this.responseService.sendResponse({}, res, SUCCESS.CODE, {
+        code: '1002',
+        data: result
+      }, '1002');
+    } else {
+      this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '1003' }, '1003');
     }
     return result;
   }
@@ -268,5 +356,31 @@ export class AuthController {
       this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '1101' }, '1101');
     }
     return result;
+  }
+
+  @Post('login/lms_staff')
+  @ApiBody({ type: StaffLoginDto })
+  async LMS_staffLogin(@Body() LMS_staffLoginDto: StaffLoginDto, @Res() res) {
+    const result = await this.authService.handle_LMS_StaffLogin(LMS_staffLoginDto);
+    if (!result) {
+      return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '1101' }, '1101');
+    }
+    if (result === 'INVALID_PASSWORD') {
+      return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, {
+        code: '1101',
+      }, '1101');
+    }
+    if (result && result?.status === 'STAFF_NOT_LMS_ADMIN') {
+      return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, {
+        code: '5114',
+      }, '5114');
+    }
+    if (result) {
+      return this.responseService.sendResponse({}, res, SUCCESS.CODE, {
+        code: '1001',
+        data: result
+      }, '1001');
+    }
+    return this.responseService.sendResponse({}, res, ERROR.CLIENT_ERROR.BAD_REQUEST, { code: '1101' }, '1101');
   }
 }

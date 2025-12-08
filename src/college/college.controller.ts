@@ -52,6 +52,7 @@ export class CollegeController {
   @ApiQuery({ name: 'status', required: false, description: 'Return Based on status' })
   @ApiQuery({ name: 'name', required: false, description: 'Return Based on name' })
   @ApiQuery({ name: 'institute', required: false, description: 'Return Based on instituteId' })
+  @ApiQuery({ name: 'isLmsCollege', required: false, description: 'Filter by LMS College (true/false)' })
   @Get()
   async findAll(@Query() queryParams: { limit?: number; skip?: number }, @Res() res: any) {
     try {
@@ -76,6 +77,7 @@ export class CollegeController {
   @ApiBearerAuth()
   @ApiQuery({ name: 'name', required: false, description: 'Return Based on name' })
   @ApiQuery({ name: 'institute', required: false, description: 'Return Based on instituteId' })
+  @ApiQuery({ name: 'isLmsCollege', required: false, description: 'Filter by LMS College (true/false)' })
   @Get('dropdown')
   async findAllActiveColleges(@Query() queryParams: { name: string }, @Res() res: any) {
     try {

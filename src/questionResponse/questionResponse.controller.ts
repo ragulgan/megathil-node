@@ -7,7 +7,9 @@ import { appConst } from '../libs/constants';
 import { AdminGuard, JwtAuthGuard, UserStaffAdminGuard } from 'src/auth/jwt-auth.guard';
 const { ERROR, SUCCESS } = appConst;
 import { verifyAndExtractToken } from 'src/utill/utill';
-
+import type { Response as EResponse } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @ApiTags('QuestionResponse')
 @Controller('questionResponse')
@@ -104,14 +106,11 @@ export class QuestionResponseController {
   async reissueCertificate(@Param('userId') userId: string, @Res() res: any) {
     try {
       const userCertificateData: any = await this.QuestionResponseService.certificateReIssue(userId);
-      console.log("userCertificateData", userCertificateData)
       if (userCertificateData) {
         this.responseService.sendResponse({}, res, SUCCESS.CODE, {
           code: '5111',
           data: {
-            status: userCertificateData.status,
-            recordId: userCertificateData.recordId,
-            Cred_URL: userCertificateData.Cred_URL
+            status: userCertificateData.status
           }
         }, '5111');
       } else {
@@ -121,4 +120,34 @@ export class QuestionResponseController {
       throw new BadRequestException();
     }
   }
+
+  @Get('certificate/read/:userId')
+  async streamCertificate(@Param('userId') userId: string, @Res() res: EResponse) {
+    try {
+      const result = await this.QuestionResponseService.checkCompletionAndStreamCertificate(userId);
+      if (result.success && result.filePath) {
+        const filePath = result.filePath;
+
+        if (fs.existsSync(filePath)) {
+          const stat = fs.statSync(filePath);
+          const filename = path.basename(filePath);
+          res.setHeader('Content-Length', stat.size);
+          // res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+          res.setHeader('Content-Disposition', `inline`);
+          res.setHeader('Content-Type', 'image/png');
+
+          const stream = fs.createReadStream(filePath);
+          return stream.pipe(res);
+        } else {
+          return this.responseService.sendResponse({}, res, SUCCESS.CODE, { code: '5113' }, '5113');
+        }
+      } else {
+        this.responseService.sendResponse({}, res, SUCCESS.CODE, { code: '5112' }, '5112')
+      }
+    } catch (error) {
+      console.error('Error streaming certificate:', error);
+      return this.responseService.sendResponse({}, res, 500, { code: '5000' }, 'Internal Server Error');
+    }
+  }
+
 }

@@ -181,6 +181,7 @@ export class GemsPackageController {
   @ApiQuery({ name: 'page', required: false, })
   @ApiQuery({ name: 'limit', required: false, })
   @ApiQuery({ name: 'status', required: false, description: 'Return Based on status' })
+  @ApiQuery({ name: 'isLMSOffer', required: false, description: 'Filter by LMS Offer (true/false)' })
   @ApiQuery({ name: 'title', required: false, description: 'Return Based on title' })
   @ApiQuery({ name: 'promotorId', required: false, description: 'Return Based on promotor id' })
   @Get('admin/carousel')

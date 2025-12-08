@@ -7,7 +7,7 @@ import { CreateAdminDto } from '../adminUsers/dto/createAdmin.dto';
 import { AdminService } from 'src/adminUsers/admin.service';
 import * as jwt from 'jsonwebtoken';
 import { OtpService } from "../otp/otp.service";
-import { AdminChangePasswordInterviewerDto, AdminChangePasswordStaffDto, InitiateDto, InterviewerLoginDto, LoginDto, OtpDto, PromotorLoginDto, StaffLoginDto } from './dto/logindto';
+import { AdminChangePasswordInterviewerDto, AdminChangePasswordStaffDto, InitiateDto, InterviewerLoginDto, LoginDto, OtpDto, PromotorLoginDto, SignUpDto, StaffLoginDto } from './dto/logindto';
 import { StaffService } from 'src/staff/staff.service';
 import { InterviewerService } from '../interviewer/interviewer.service';
 const moment = require('moment');
@@ -109,6 +109,44 @@ export class AuthService {
     return false;
   }
 
+  async handle_LMS_StaffLogin(staffLoginDto: StaffLoginDto) {
+    const staffDetails = await this.staffService.authenticateStaff(staffLoginDto);
+    if (!staffDetails) {
+      return null;
+    }
+    const isPasswordMatch = await bcrypt.compare(staffLoginDto.password, staffDetails.password);
+    if (!isPasswordMatch) {
+      return 'INVALID_PASSWORD';
+    }
+    if (!staffDetails.isLmsAdmin) {
+      return { status: 'STAFF_NOT_LMS_ADMIN' };
+    }
+    try {//logging staff activities
+      this.staffService.saveStaffActivity({
+        staffId: staffDetails.id,
+        action: 'LMS_staff_authenticated',
+        activity: 'LMS Staff Authenticated',
+        usefullId: staffDetails.id,
+        usefullIdFor: 'staffid',
+        reason: `Logged in`
+      }).then(() => { });
+    } catch { }
+    const payload: any = {
+      id: staffDetails.id,
+      firstName: staffDetails.firstName,
+      lastName: staffDetails.lastName,
+      email: staffDetails.email,
+      mobileNumber: staffDetails.mobileNumber,
+      profileImage: staffDetails.profileImage,
+      college: staffDetails.college,
+      role: 'STAFF'
+    }
+    return {
+      staff: payload,
+      token: this.jwtService.sign(payload),
+    };
+  }
+
   async handleInterviewerLogin(interviewerLoginDto: InterviewerLoginDto) {
     const interviewerDetails = await this.interviewerService.authenticateInterviewer(interviewerLoginDto);
     if (interviewerDetails) {
@@ -199,6 +237,10 @@ export class AuthService {
     return await this.usersService.generateUserOtp(loginDto);
   }
 
+  async triggerLMSUserLogin(loginDto: LoginDto) {
+    return await this.usersService.generateLMSUserOtp(loginDto);
+  }
+
   async verifyOtp(otpDto: OtpDto) {
     const newUser = await this.usersService.validateUserOtp(otpDto);
     if (newUser) {
@@ -206,6 +248,28 @@ export class AuthService {
       return {
         user: newUser,
         token: this.jwtService.sign(payload),
+      };
+    }
+    return false;
+  }
+
+  async verifyLMSOtp(otpDto: OtpDto) {
+    const newUser = await this.usersService.validateLMSUserOtp(otpDto);
+    if (newUser) {
+      const payload = await this.generatePayload(newUser);
+      return {
+        user: newUser,
+        token: this.jwtService.sign(payload),
+      };
+    }
+    return false;
+  }
+
+  async signupLMSUser(signUpDto: SignUpDto) {
+    const newUser = await this.usersService.validateAndcreateUsers(signUpDto);
+    if (newUser) {
+      return {
+        user: newUser
       };
     }
     return false;
