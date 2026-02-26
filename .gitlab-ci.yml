@@ -1,0 +1,70 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  IMAGE_NAME: $CI_REGISTRY_IMAGE
+#  IMAGE_TAG: ${CI_COMMIT_REF_SLUG}   # use branch name as tag
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+# -------------------
+# Build Stage
+# -------------------
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:    
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  only:
+    - Developement-LMS
+
+# -------------------
+# Deploy Stage
+# -------------------
+# deploy:
+#   stage: deploy
+#   image: alpine:latest
+#   before_script:
+#     - apk add --no-cache openssh-client
+#   script:
+#     - mkdir -p ~/.ssh
+#     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+#     - chmod 600 ~/.ssh/id_rsa
+#     - ssh -o StrictHostKeyChecking=no ubuntu@13.201.238.31 "
+#         echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY &&
+#         docker pull $IMAGE_TAG &&
+#         docker stop megathil-dev || true &&
+#         docker rm megathil-dev || true &&
+#         docker run -d -p 8000:8000 --name megathil-dev $IMAGE_TAG
+#       "
+#   only:
+#     - Developement-LMS
+
+deploy:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H 13.201.238.31 >> ~/.ssh/known_hosts
+
+  script:
+    - ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@13.201.238.31 "
+      echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin &&
+      docker image prune -af &&
+      docker pull $IMAGE_TAG &&
+      docker stop megathil-dev || true &&
+      docker rm megathil-dev || true &&
+      docker run -d -p 8000:8000 --name megathil-dev $IMAGE_TAG
+      "
+  only:
+    - Developement-LMS
+

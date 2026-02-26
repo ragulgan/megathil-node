@@ -51,6 +51,7 @@ import { Twilio } from 'twilio';
 import { PromoCode } from '../Promotors/promotor.schema';
 import { Staff } from '../staff/staff.schema';
 import { PaymentWorkTable } from './paymentWork.schema';
+import { TemplateType } from 'src/templateType/templateType.schema';
 
 
 @Injectable()
@@ -83,6 +84,7 @@ export class UsersService {
     @InjectModel(PromoCode.name) private PromoCodeModel: Model<PromoCode>,
     @InjectModel(Staff.name) private StaffModel: Model<Staff>,
     @InjectModel(PaymentWorkTable.name) private PaymentWorkTableModel: Model<PaymentWorkTable>,
+    @InjectModel(TemplateType.name) private TemplateTypeModel: Model<TemplateType>,
 
     private readonly adminService: AdminService,
     private readonly emailService: EmailService,
@@ -303,13 +305,13 @@ export class UsersService {
 
       if (queryParams.email) {
         orCondition.push({
-          email: new RegExp(`${queryParams.email}`, 'i')
+          email: new RegExp(`^${queryParams.email}`, 'i')
         });
       }
 
       if (queryParams.mobileNumber) {
         orCondition.push({
-          mobileNumber: new RegExp(`${queryParams.mobileNumber}`, 'i')
+          mobileNumber: new RegExp(`^${queryParams.mobileNumber}`, 'i')
         });
       }
 
@@ -419,6 +421,9 @@ export class UsersService {
     try {
       const userList = await this.UsersModel.aggregate([
         { $match: match },
+        { $sort: sortCriteria },
+        { $skip: skipValue },
+        { $limit: limit },
         {
           $lookup: {
             from: 'countries',
@@ -655,9 +660,6 @@ export class UsersService {
             id: "$_id"
           }
         },
-        { $sort: sortCriteria },
-        { $skip: skipValue },
-        { $limit: limit }
       ]).exec();
       const count = await this.UsersModel.countDocuments(match).exec();
       return { userList, count };
@@ -4007,6 +4009,11 @@ try {
         $match: match,
       },
       {
+        $sort: { createdAt: -1 }
+      },
+      { $skip: skipValue },
+      { $limit: limit },
+      {
         $lookup: {
           from: 'units',
           localField: 'unitId',
@@ -4028,11 +4035,6 @@ try {
       {
         $unwind: { path: '$module', preserveNullAndEmptyArrays: true }
       },
-      {
-        $sort: { createdAt: -1 }
-      },
-      { $skip: skipValue },
-      { $limit: limit },
       {
         $project: {
           _id: 0,
@@ -4114,171 +4116,50 @@ try {
     };
 
     if (queryParams.collegeId) {
-      if (_.isArray(queryParams.collegeId)) {
-        match['college'] = { $in: queryParams.collegeId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['college'] = new ObjectId(queryParams.collegeId);
-      }
+      match.college = _.isArray(queryParams.collegeId)
+        ? { $in: queryParams.collegeId.map((id: string) => new ObjectId(id)) }
+        : new ObjectId(queryParams.collegeId);
     }
 
     if (queryParams.courseId) {
-      if (_.isArray(queryParams.courseId)) {
-        match['course'] = { $in: queryParams.courseId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['course'] = new ObjectId(queryParams.courseId);
-      }
+      match.course = _.isArray(queryParams.courseId)
+        ? { $in: queryParams.courseId.map((id: string) => new ObjectId(id)) }
+        : new ObjectId(queryParams.courseId);
     }
 
     if (queryParams.departmentId) {
-      if (_.isArray(queryParams.departmentId)) {
-        match['department'] = { $in: queryParams.departmentId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['department'] = new ObjectId(queryParams.departmentId);
-      }
+      match.department = _.isArray(queryParams.departmentId)
+        ? { $in: queryParams.departmentId.map((id: string) => new ObjectId(id)) }
+        : new ObjectId(queryParams.departmentId);
     }
 
     if (queryParams.staffId) {
-      if (_.isArray(queryParams.staffId)) {
-        match['staff'] = { $in: queryParams.staffId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['staff'] = new ObjectId(queryParams.staffId);
-      }
+      match.staff = _.isArray(queryParams.staffId)
+        ? { $in: queryParams.staffId.map((id: string) => new ObjectId(id)) }
+        : new ObjectId(queryParams.staffId);
     }
 
-    if (queryParams.source) {
-      match['source'] = queryParams.source
-    }
-
-    if (queryParams.status) {
-      match['status'] = queryParams.status
-    }
-
-    if (queryParams.userType) {
-      match['userType'] = queryParams.userType
-    }
+    if (queryParams.source) match.source = queryParams.source;
+    if (queryParams.status) match.status = queryParams.status;
+    if (queryParams.userType) match.userType = queryParams.userType;
 
     const data = await this.UsersModel.aggregate([
       { $match: match },
       {
-        $lookup: {
-          from: "otps",
-          localField: "email",
-          foreignField: "email",
-          pipeline: [
-            { $match: { status: "VERIFIED" } },
-            { $sort: { updatedAt: -1 } },
-            { $limit: 1 }
-          ],
-          as: "emailOtpDetails"
-        }
-      },
-      {
-        $lookup: {
-          from: "otps",
-          localField: "mobileNumber",
-          foreignField: "mobileNumber",
-          pipeline: [
-            { $match: { status: "VERIFIED" } },
-            { $sort: { updatedAt: -1 } },
-            { $limit: 1 }
-          ],
-          as: "mobileOtpDetails"
-        }
-      },
-      {
-        $set: {
-          hasLoggedIn: {
-            $cond: {
-              if: { $gt: [{ $size: "$emailOtpDetails" }, 0] },
-              then: "Logged In",
-              else: {
-                $cond: {
-                  if: { $gt: [{ $size: "$mobileOtpDetails" }, 0] },
-                  then: "Logged In",
-                  else: "Not logged in"
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        $lookup: {
-          from: 'colleges',
-          localField: 'college',
-          foreignField: '_id',
-          as: 'collegeDetails'
-        }
-      },
-      {
-        $unwind: { path: '$collegeDetails', preserveNullAndEmptyArrays: true }
-      },
-      {
-        $lookup: {
-          from: 'departments',
-          localField: 'department',
-          foreignField: '_id',
-          as: 'departmentDetails'
-        }
-      },
-      {
-        $unwind: { path: '$departmentDetails', preserveNullAndEmptyArrays: true }
-      },
-      {
-        $lookup: {
-          from: 'courses',
-          localField: 'course',
-          foreignField: '_id',
-          as: 'courseDetails'
-        }
-      },
-      {
-        $unwind: { path: '$courseDetails', preserveNullAndEmptyArrays: true }
-      },
-      {
-        $lookup: {
-          from: 'userprogressstatuses',
-          localField: '_id',
-          foreignField: 'userId',
-          pipeline: [
-            {
-              $lookup: {
-                from: "units",
-                localField: "unitId",
-                foreignField: "_id",
-                as: "unitDetails"
-              }
-            },
-            { $unwind: "$unitDetails" },
-            {
-              $addFields: {
-                "unitDetails.displayOrderNum": { $toInt: "$unitDetails.displayOrder" },
-                "unitDetails.unitName": "$unitDetails.unitName"
-              }
-            },
-            {
-              $lookup: {
-                from: "modules",
-                localField: "moduleId",
-                foreignField: "_id",
-                as: "moduleDetails"
-              }
-            },
-            { $unwind: "$moduleDetails" },
-            {
-              $addFields: {
-                "moduleDetails.displayOrderNum": { $toInt: "$moduleDetails.displayOrder" },
-                "moduleDetails.moduleName": "$moduleDetails.moduleName"
-              }
-            },
-            { $sort: { "unitDetails.displayOrderNum": -1, "moduleDetails.displayOrderNum": -1 } },
-            { $limit: 1 }
-          ],
-          as: 'userProgressStatus'
-        }
-      },
-      {
-        $unwind: { path: '$userProgressStatus', preserveNullAndEmptyArrays: true }
+        $project: {
+          firstName: 1,
+          lastName: 1,
+          email: 1,
+          mobileNumber: 1,
+          gender: 1,
+          source: 1,
+          userType: 1,
+          createdAt: 1,
+          college: 1,
+          department: 1,
+          course: 1,
+          _id: 1,
+        },
       },
       {
         $lookup: {
@@ -4288,20 +4169,118 @@ try {
             {
               $match: {
                 $expr: {
-                  $or: [
-                    { $and: [{ $eq: ["$email", "$$userEmail"] }, { $eq: ["$status", "VERIFIED"] }] },
-                    { $and: [{ $eq: ["$mobileNumber", "$$userMobile"] }, { $eq: ["$status", "VERIFIED"] }] }
-                  ]
-                }
-              }
+                  $and: [
+                    { $eq: ["$status", "VERIFIED"] },
+                    {
+                      $or: [
+                        { $eq: ["$email", "$$userEmail"] },
+                        { $eq: ["$mobileNumber", "$$userMobile"] },
+                      ],
+                    },
+                  ],
+                },
+              },
             },
             { $sort: { updatedAt: -1 } },
             { $limit: 1 },
           ],
-          as: "loginInfo"
-        }
-      }, 
-      { $unwind: { path: '$loginInfo', preserveNullAndEmptyArrays: true } },
+          as: "loginInfo",
+        },
+      },
+      { $unwind: { path: "$loginInfo", preserveNullAndEmptyArrays: true } },
+
+      {
+        $addFields: {
+          hasLoggedIn: {
+            $cond: [
+              { $ifNull: ["$loginInfo", false] },
+              "Logged In",
+              "Not logged in",
+            ],
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "colleges",
+          localField: "college",
+          foreignField: "_id",
+          as: "collegeDetails",
+        },
+      },
+      { $unwind: { path: "$collegeDetails", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "departments",
+          localField: "department",
+          foreignField: "_id",
+          as: "departmentDetails",
+        },
+      },
+      { $unwind: { path: "$departmentDetails", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "courseDetails",
+        },
+      },
+      { $unwind: { path: "$courseDetails", preserveNullAndEmptyArrays: true } },
+
+      {
+        $lookup: {
+          from: "userprogressstatuses",
+          localField: "_id",
+          foreignField: "userId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "units",
+                localField: "unitId",
+                foreignField: "_id",
+                as: "unitDetails",
+              },
+            },
+            { $unwind: "$unitDetails" },
+            {
+              $addFields: {
+                "unitDetails.displayOrderNum": {
+                  $toInt: "$unitDetails.displayOrder",
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: "modules",
+                localField: "moduleId",
+                foreignField: "_id",
+                as: "moduleDetails",
+              },
+            },
+            { $unwind: "$moduleDetails" },
+            {
+              $addFields: {
+                "moduleDetails.displayOrderNum": {
+                  $toInt: "$moduleDetails.displayOrder",
+                },
+              },
+            },
+            {
+              $sort: {
+                "unitDetails.displayOrderNum": -1,
+                "moduleDetails.displayOrderNum": -1,
+              },
+            },
+            { $limit: 1 },
+          ],
+          as: "userProgressStatus",
+        },
+      },
+      { $unwind: { path: "$userProgressStatus", preserveNullAndEmptyArrays: true } },
+
       {
         $project: {
           _id: 0,
@@ -4319,430 +4298,384 @@ try {
           status: "$userProgressStatus.status",
           unitDisplayNum: "$userProgressStatus.unitDetails.displayOrderNum",
           moduleDisplayNum: "$userProgressStatus.moduleDetails.displayOrderNum",
-          // hasLoggedIn: {
-          //   $cond: { if: { $gt: [{ $size: "$otpDetails" }, 0] }, then: "Logged In", else: "Not logged in" }
-          // },
           hasLoggedIn: 1,
           lastLoginTime: "$loginInfo.updatedAt",
-          unitName: {
-            $ifNull: [
-              { $concat: [{ $toString: "$userProgressStatus.unitDetails.unitName" }] },
-              "Not started"
-            ]
-          },
-          moduleName: {
-            $ifNull: [
-              { $concat: [{ $toString: "$userProgressStatus.moduleDetails.moduleName" }] },
-              "Not started"
-            ]
-          }
-        }
+        },
       },
     ]);
 
-    const transformData = (data: any[]) => {
-      return data.map((item, index) => {
-        const transformedItem = {
-          SNo: `${index + 1}`,
-          College: item.college,
-          Department: item.department,
-          Course: item.course,
-          'Mobile Number': item.mobileNumber,
-          'Student Name': `${item.firstName} ${item.lastName}`,
-          UserType: item.userType,
-          CreateDate: moment.utc(item.createdAt).utcOffset(330).format('llll'),
-          eMail: item.email,
-          Gender: item.gender,
-          LoggedIn: item.hasLoggedIn,
-          LastLogin: item.lastLoginTime ? moment.utc(item.lastLoginTime).utcOffset(330).format('llll') : 'Not logged in',
-          Unit: item && item.unitDisplayNum !== undefined ? `${'Unit'} ${item.unitDisplayNum}` : 'Not Yet started',
-          Module: item && item.moduleDisplayNum !== undefined ? `${'M-'}${item.moduleDisplayNum}` : 'Not Yet started'
-        };
-        return transformedItem;
-      });
-    };
+    const transformedData = data.map((item, index) => ({
+      SNo: `${index + 1}`,
+      College: item.college,
+      Department: item.department,
+      Course: item.course,
+      "Mobile Number": item.mobileNumber,
+      "Student Name": `${item.firstName} ${item.lastName}`,
+      UserType: item.userType,
+      CreateDate: moment.utc(item.createdAt).utcOffset(330).format("llll"),
+      eMail: item.email,
+      Gender: item.gender,
+      LoggedIn: item.hasLoggedIn,
+      LastLogin: item.lastLoginTime
+        ? moment.utc(item.lastLoginTime).utcOffset(330).format("llll")
+        : "Not logged in",
+      Unit:
+        item.unitDisplayNum !== undefined
+          ? `Unit ${item.unitDisplayNum}`
+          : "Not Yet started",
+      Module:
+        item.moduleDisplayNum !== undefined
+          ? `M-${item.moduleDisplayNum}`
+          : "Not Yet started",
+    }));
 
-    const transformedData = transformData(data);
     return transformedData;
   }
 
   async getUserReports(queryParams: any) {
     const ObjectId = mongoose.Types.ObjectId;
-    const match = {
-      status: 'ACTIVE',
-    }
-    if (queryParams.collegeId) {
-      if (_.isArray(queryParams.collegeId)) {
-        match['college'] = { $in: queryParams.collegeId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['college'] = new ObjectId(queryParams.collegeId);
-      }
-    }
 
-    if (queryParams.courseId) {
-      if (_.isArray(queryParams.courseId)) {
-        match['course'] = { $in: queryParams.courseId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['course'] = new ObjectId(queryParams.courseId);
-      }
-    }
+    const match: Record<string, any> = { status: 'ACTIVE' };
 
-    if (queryParams.departmentId) {
-      if (_.isArray(queryParams.departmentId)) {
-        match['department'] = { $in: queryParams.departmentId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['department'] = new ObjectId(queryParams.departmentId);
-      }
-    }
+    const addIdFilter = (key: string, field: string) => {
+      if (!queryParams[key]) return;
+      match[field] = _.isArray(queryParams[key])
+        ? { $in: queryParams[key].map((id: string) => new ObjectId(id)) }
+        : new ObjectId(queryParams[key]);
+    };
 
-    if (queryParams.staffId) {
-      if (_.isArray(queryParams.staffId)) {
-        match['staff'] = { $in: queryParams.staffId.map((id: string) => new ObjectId(id)) };
-      } else {
-        match['staff'] = new ObjectId(queryParams.staffId);
-      }
-    }
+    addIdFilter('collegeId', 'college');
+    addIdFilter('courseId', 'course');
+    addIdFilter('departmentId', 'department');
+    addIdFilter('staffId', 'staff');
 
-    if (queryParams.source) {
-      match['source'] = queryParams.source
-    }
+    if (queryParams.source) match['source'] = queryParams.source;
+    if (queryParams.status) match['status'] = queryParams.status;
+    if (queryParams.userType) match['userType'] = queryParams.userType;
 
-    if (queryParams.status) {
-      match['status'] = queryParams.status
-    }
+    // ── 2. Pre-fetch valid questionIds by templateType (outside main pipeline) ─
+    // This replaces the deeply nested $lookup → $unwind → $match inside questionresponses
+    const validTemplateTypes = await this.TemplateTypeModel
+      .find(
+        { displayValue: { $in: ['aiquestions', 'aiAnalysis'] } },
+        { _id: 1 }
+      )
+      .lean();
 
-    if (queryParams.userType) {
-      match['userType'] = queryParams.userType
-    }
+    const validTemplateTypeIds = validTemplateTypes.map(t => t._id);
 
-    const data = await this.UsersModel.aggregate([
-      { $match: match },
-      {
-        $lookup: {
-          from: 'colleges',
-          localField: 'college',
-          foreignField: '_id',
-          as: 'collegeDetails',
+    const validQuestions = await this.questionModel
+      .find(
+        { templateType: { $in: validTemplateTypeIds } },
+        { _id: 1, questionId: 1, questionTitle: 1, displayOrder: 1 }
+      )
+      .lean();  // returns plain JS objects, fully typed
+
+    const validQuestionIds = validQuestions.map(q => q._id);
+    const validQuestionMap = new Map(
+      validQuestions.map(q => [q._id.toString(), q])
+    );
+
+    // ── 3. Main aggregation (flattened, no nested $lookup) ──────────────
+    const data = await this.UsersModel.aggregate(
+      [
+        { $match: match },
+
+        // Basic dimension lookups (lightweight)
+        {
+          $lookup: {
+            from: 'colleges',
+            localField: 'college',
+            foreignField: '_id',
+            as: 'collegeDetails',
+          },
         },
-      },
-      {
-        $unwind: { path: '$collegeDetails', preserveNullAndEmptyArrays: true },
-      },
-      {
-        $lookup: {
-          from: 'departments',
-          localField: 'department',
-          foreignField: '_id',
-          as: 'departmentDetails'
-        }
-      },
-      {
-        $unwind: { path: '$departmentDetails', preserveNullAndEmptyArrays: true }
-      },
-      {
-        $lookup: {
-          from: 'courses',
-          localField: 'course',
-          foreignField: '_id',
-          as: 'courseDetails'
-        }
-      },
-      {
-        $unwind: { path: '$courseDetails', preserveNullAndEmptyArrays: true }
-      },
-      {
-        $lookup: {
-          from: 'questionresponses',
-          localField: '_id',
-          foreignField: 'userId',
-          pipeline: [
-            {
-              $lookup: {
-                from: 'userlearninghistories',
-                localField: 'userLearningHistoryId',
-                foreignField: '_id',
-                as: 'userlearninghistories',
+        { $unwind: { path: '$collegeDetails', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'department',
+            foreignField: '_id',
+            as: 'departmentDetails',
+          },
+        },
+        { $unwind: { path: '$departmentDetails', preserveNullAndEmptyArrays: true } },
+        {
+          $lookup: {
+            from: 'courses',
+            localField: 'course',
+            foreignField: '_id',
+            as: 'courseDetails',
+          },
+        },
+        { $unwind: { path: '$courseDetails', preserveNullAndEmptyArrays: true } },
+
+        // ── Question responses — filtered early using pre-fetched IDs ──
+        {
+          $lookup: {
+            from: 'questionresponses',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              // Filter to only valid AI question responses immediately
+              { $match: { questionId: { $in: validQuestionIds } } },
+
+              // Lookup only what we need
+              {
+                $lookup: {
+                  from: 'units',
+                  localField: 'unitId',
+                  foreignField: '_id',
+                  as: 'unitDetails',
+                },
               },
-            },
-            {
-              $lookup: {
-                from: 'units',
-                localField: 'unitId',
-                foreignField: '_id',
-                as: 'unitDetails',
+              { $unwind: { path: '$unitDetails', preserveNullAndEmptyArrays: true } },
+
+              {
+                $lookup: {
+                  from: 'modules',
+                  localField: 'moduleId',
+                  foreignField: '_id',
+                  as: 'moduleDetails',
+                },
               },
-            },
-            {
-              $lookup: {
-                from: 'modules',
-                localField: 'moduleId',
-                foreignField: '_id',
-                as: 'moduleDetails',
+              { $unwind: { path: '$moduleDetails', preserveNullAndEmptyArrays: true } },
+
+              {
+                $lookup: {
+                  from: 'userlearninghistories',
+                  localField: 'userLearningHistoryId',
+                  foreignField: '_id',
+                  as: 'userlearninghistories',
+                },
               },
-            },
-            {
-              $lookup: {
-                from: 'questions',
-                localField: 'questionId',
-                foreignField: '_id',
-                pipeline: [
-                  {
-                    $lookup: {
-                      from: 'templatetypes',
-                      localField: 'templateType',
-                      foreignField: '_id',
-                      as: 'templateTypeDetails',
-                    },
-                  },
-                  { $unwind: { path: '$templateTypeDetails', preserveNullAndEmptyArrays: true } },
-                  {
-                    $lookup: {
-                      from: 'options',
-                      localField: 'questions.id',
-                      foreignField: 'questionId',
-                      as: 'options',
-                    },
-                  },
-                  { $unwind: { path: '$options', preserveNullAndEmptyArrays: true } },
-                ],
-                as: 'questionsDetails',
-              },
-            },
-            {
-              $unwind: { path: '$unitDetails', preserveNullAndEmptyArrays: true },
-            },
-            {
-              $unwind: { path: '$moduleDetails', preserveNullAndEmptyArrays: true },
-            },
-            {
-              $unwind: { path: '$questionsDetails', preserveNullAndEmptyArrays: true },
-            },
-            {
-              $addFields: {
-                templateTypeDisplayValue: '$questionsDetails.templateTypeDetails.displayValue',
-              },
-            },
-            {
-              $match: {
-                $or: [
-                  { templateTypeDisplayValue: 'aiquestions' },
-                  { templateTypeDisplayValue: 'aiAnalysis' },
-                ],
-              },
-            },
-            {
-              $addFields: {
-                fluencyLevelHigh: { $max: { $ifNull: ['$fluencyLevel.score', []] } },
-                fluencyLevelLow: { $min: { $ifNull: ['$fluencyLevel.score', []] } },
-                energyHigh: { $max: { $ifNull: ['$emotionRecognition.score', []] } },
-                energyLow: { $min: { $ifNull: ['$emotionRecognition.score', []] } },
-                speechRateHigh: { $max: '$speechRate' },
-                speechRateLow: { $min: '$speechRate' },
-                vocabularyRatingHigh: { $max: '$vocabularyRating' },
-                vocabularyRatingLow: { $min: '$vocabularyRating' },
-                contentRelevanceRatingHigh: { $max: '$contentRelevanceRating' },
-                contentRelevanceRatingLow: { $min: '$contentRelevanceRating' },
-                attempt: {
-                  $max: {
-                    $cond: {
-                      if: { $lt: ['$attempt', '$userlearninghistories.attempt'] },
-                      then: '$userlearninghistories.attempt',
-                      else: '$attempt',
+              { $unwind: { path: '$userlearninghistories', preserveNullAndEmptyArrays: true } },
+
+              // Compute metrics per response
+              {
+                $addFields: {
+                  fluencyLevelHigh: { $max: { $ifNull: ['$fluencyLevel.score', []] } },
+                  fluencyLevelLow: { $min: { $ifNull: ['$fluencyLevel.score', []] } },
+                  energyHigh: { $max: { $ifNull: ['$emotionRecognition.score', []] } },
+                  energyLow: { $min: { $ifNull: ['$emotionRecognition.score', []] } },
+                  speechRateHigh: { $max: '$speechRate' },
+                  speechRateLow: { $min: '$speechRate' },
+                  vocabularyRatingHigh: { $max: '$vocabularyRating' },
+                  vocabularyRatingLow: { $min: '$vocabularyRating' },
+                  contentRelevanceRatingHigh: { $max: '$contentRelevanceRating' },
+                  contentRelevanceRatingLow: { $min: '$contentRelevanceRating' },
+                  attempt: {
+                    $max: {
+                      $cond: {
+                        if: { $lt: ['$attempt', '$userlearninghistories.attempt'] },
+                        then: '$userlearninghistories.attempt',
+                        else: '$attempt',
+                      },
                     },
                   },
                 },
               },
-            },
-          ],
-          as: 'questionResponses',
-        },
-      },
-      {
-        $unwind: { path: '$questionResponses', preserveNullAndEmptyArrays: true },
-      },
-      {
-        $group: {
-          _id: {
-            userId: '$_id',
-            unitId: '$questionResponses.unitDetails.unitId',
-            moduleId: '$questionResponses.moduleDetails.moduleId',
-            questionId: '$questionResponses.questionsDetails.questionId',
-          },
-          userRecord: { $first: '$$ROOT' },
-          fluencyLevelHigh: { $max: '$questionResponses.fluencyLevelHigh' },
-          fluencyLevelLow: { $min: '$questionResponses.fluencyLevelLow' },
-          energyHigh: { $max: '$questionResponses.energyHigh' },
-          energyLow: { $min: '$questionResponses.energyLow' },
-          speechRateHigh: { $max: '$questionResponses.speechRateHigh' },
-          speechRateLow: { $min: '$questionResponses.speechRateLow' },
-          vocabularyRatingHigh: { $max: '$questionResponses.vocabularyRatingHigh' },
-          vocabularyRatingLow: { $min: '$questionResponses.vocabularyRatingLow' },
-          contentRelevanceRatingHigh: { $max: '$questionResponses.contentRelevanceRatingHigh' },
-          contentRelevanceRatingLow: { $min: '$questionResponses.contentRelevanceRatingLow' },
-          attempt: { $max: '$questionResponses.attempt' },
-        },
-      },
-      {
-        $project: {
-          firstName: '$userRecord.firstName',
-          lastName: '$userRecord.lastName',
-          email: '$userRecord.email',
-          mobileNumber: '$userRecord.mobileNumber',
-          gender: '$userRecord.gender',
-          source: '$userRecord.source',
-          college: '$userRecord.collegeDetails.name',
-          department: "$userRecord.departmentDetails.name",
-          course: "$userRecord.courseDetails.name",
-          unitName: '$userRecord.questionResponses.unitDetails.unitName',
-          moduleName: '$userRecord.questionResponses.moduleDetails.moduleName',
-          questionTitle: '$userRecord.questionResponses.questionsDetails.questionTitle',
-          displayOrder: '$userRecord.questionResponses.unitDetails.displayOrder',
-          moduledisplayOrder: '$userRecord.questionResponses.moduleDetails.displayOrder',
-          questiondisplayOrder: '$userRecord.questionResponses.questionsDetails.displayOrder',
-          fluencyLevelHigh: {
-            $cond: {
-              if: { $gt: ['$fluencyLevelHigh', 1] },
-              then: '$fluencyLevelHigh',
-              else: { $round: [{ $multiply: ['$fluencyLevelHigh', 100] }, 0] }
-            },
-          },
-          fluencyLevelLow: {
-            $cond: {
-              if: { $gt: ['$fluencyLevelLow', 1] },
-              then: '$fluencyLevelLow',
-              else: { $round: [{ $multiply: ['$fluencyLevelLow', 100] }, 0] }
-            },
-          },
-          energyHigh: {
-            $cond: {
-              if: { $gt: ['$energyHigh', 1] },
-              then: '$energyHigh',
-              else: { $round: [{ $multiply: ['$energyHigh', 100] }, 0] }
-            },
-          },
-          energyLow: {
-            $cond: {
-              if: { $gt: ['$energyLow', 1] },
-              then: '$energyLow',
-              else: { $round: [{ $multiply: ['$energyLow', 100] }, 0] }
-            },
-          },
-          speechRateHigh: {
-            $round: ['$speechRateHigh', 0]
-          },
-          speechRateLow: {
-            $round: ['$speechRateLow', 0]
-          },
-          vocabularyRatingHigh: 1,
-          vocabularyRatingLow: 1,
-          contentRelevanceRatingHigh: 1,
-          contentRelevanceRatingLow: 1,
-          overallScoreHigh: {
-            $round: [
-              {
-                $divide: [
-                  {
-                    $sum: [
-                      { $ifNull: ['$fluencyLevelHigh', 0] },
-                      { $ifNull: ['$speechRateHigh', 0] },
-                      { $ifNull: [{ $convert: { input: '$vocabularyRatingHigh', to: 'double', onError: 0, onNull: 0 } }, 0] },
-                      { $ifNull: [{ $convert: { input: '$contentRelevanceRatingHigh', to: 'double', onError: 0, onNull: 0 } }, 0] },
-                      { $ifNull: ['$energyHigh', 0] },
-                    ],
-                  },
-                  5,
-                ],
-              },
-              0,
             ],
+            as: 'questionResponses',
           },
-          overallScoreLow: {
-            $round: [
-              {
-                $divide: [
-                  {
-                    $sum: [
-                      { $ifNull: ['$fluencyLevelLow', 0] },
-                      { $ifNull: ['$speechRateLow', 0] },
-                      { $ifNull: [{ $convert: { input: '$vocabularyRatingLow', to: 'double', onError: 0, onNull: 0 } }, 0] },
-                      { $ifNull: [{ $convert: { input: '$contentRelevanceRatingLow', to: 'double', onError: 0, onNull: 0 } }, 0] },
-                      { $ifNull: ['$energyLow', 0] },
-                    ],
-                  },
-                  5,
-                ],
+        },
+
+        { $unwind: { path: '$questionResponses', preserveNullAndEmptyArrays: true } },
+
+        // ── Group per user + question (same logic as before) ────────────
+        {
+          $group: {
+            _id: {
+              userId: '$_id',
+              unitId: '$questionResponses.unitDetails.unitId',
+              moduleId: '$questionResponses.moduleDetails.moduleId',
+              questionId: '$questionResponses.questionId',   // use raw ref, map later
+            },
+            userRecord: { $first: '$$ROOT' },
+            fluencyLevelHigh: { $max: '$questionResponses.fluencyLevelHigh' },
+            fluencyLevelLow: { $min: '$questionResponses.fluencyLevelLow' },
+            energyHigh: { $max: '$questionResponses.energyHigh' },
+            energyLow: { $min: '$questionResponses.energyLow' },
+            speechRateHigh: { $max: '$questionResponses.speechRateHigh' },
+            speechRateLow: { $min: '$questionResponses.speechRateLow' },
+            vocabularyRatingHigh: { $max: '$questionResponses.vocabularyRatingHigh' },
+            vocabularyRatingLow: { $min: '$questionResponses.vocabularyRatingLow' },
+            contentRelevanceRatingHigh: { $max: '$questionResponses.contentRelevanceRatingHigh' },
+            contentRelevanceRatingLow: { $min: '$questionResponses.contentRelevanceRatingLow' },
+            attempt: { $max: '$questionResponses.attempt' },
+          },
+        },
+
+        // ── Project (same as before, scores normalized) ─────────────────
+        {
+          $project: {
+            firstName: '$userRecord.firstName',
+            lastName: '$userRecord.lastName',
+            email: '$userRecord.email',
+            mobileNumber: '$userRecord.mobileNumber',
+            gender: '$userRecord.gender',
+            source: '$userRecord.source',
+            college: '$userRecord.collegeDetails.name',
+            department: '$userRecord.departmentDetails.name',
+            course: '$userRecord.courseDetails.name',
+            unitName: '$userRecord.questionResponses.unitDetails.unitName',
+            moduleName: '$userRecord.questionResponses.moduleDetails.moduleName',
+            questionId: '$_id.questionId',   // resolved in JS below via map
+            displayOrder: '$userRecord.questionResponses.unitDetails.displayOrder',
+            moduledisplayOrder: '$userRecord.questionResponses.moduleDetails.displayOrder',
+            fluencyLevelHigh: {
+              $cond: {
+                if: { $gt: ['$fluencyLevelHigh', 1] },
+                then: '$fluencyLevelHigh',
+                else: { $round: [{ $multiply: ['$fluencyLevelHigh', 100] }, 0] },
               },
-              0,
-            ],
+            },
+            fluencyLevelLow: {
+              $cond: {
+                if: { $gt: ['$fluencyLevelLow', 1] },
+                then: '$fluencyLevelLow',
+                else: { $round: [{ $multiply: ['$fluencyLevelLow', 100] }, 0] },
+              },
+            },
+            energyHigh: {
+              $cond: {
+                if: { $gt: ['$energyHigh', 1] },
+                then: '$energyHigh',
+                else: { $round: [{ $multiply: ['$energyHigh', 100] }, 0] },
+              },
+            },
+            energyLow: {
+              $cond: {
+                if: { $gt: ['$energyLow', 1] },
+                then: '$energyLow',
+                else: { $round: [{ $multiply: ['$energyLow', 100] }, 0] },
+              },
+            },
+            speechRateHigh: { $round: ['$speechRateHigh', 0] },
+            speechRateLow: { $round: ['$speechRateLow', 0] },
+            vocabularyRatingHigh: 1,
+            vocabularyRatingLow: 1,
+            contentRelevanceRatingHigh: 1,
+            contentRelevanceRatingLow: 1,
+            attempt: 1,
+            overallScoreHigh: {
+              $round: [
+                {
+                  $divide: [
+                    {
+                      $sum: [
+                        { $ifNull: ['$fluencyLevelHigh', 0] },
+                        { $ifNull: ['$speechRateHigh', 0] },
+                        { $ifNull: [{ $convert: { input: '$vocabularyRatingHigh', to: 'double', onError: 0, onNull: 0 } }, 0] },
+                        { $ifNull: [{ $convert: { input: '$contentRelevanceRatingHigh', to: 'double', onError: 0, onNull: 0 } }, 0] },
+                        { $ifNull: ['$energyHigh', 0] },
+                      ],
+                    },
+                    5,
+                  ],
+                },
+                0,
+              ],
+            },
+            overallScoreLow: {
+              $round: [
+                {
+                  $divide: [
+                    {
+                      $sum: [
+                        { $ifNull: ['$fluencyLevelLow', 0] },
+                        { $ifNull: ['$speechRateLow', 0] },
+                        { $ifNull: [{ $convert: { input: '$vocabularyRatingLow', to: 'double', onError: 0, onNull: 0 } }, 0] },
+                        { $ifNull: [{ $convert: { input: '$contentRelevanceRatingLow', to: 'double', onError: 0, onNull: 0 } }, 0] },
+                        { $ifNull: ['$energyLow', 0] },
+                      ],
+                    },
+                    5,
+                  ],
+                },
+                0,
+              ],
+            },
           },
-          attempt: 1,
         },
-      },
+
+        {
+          $sort: {
+            displayOrder: 1,
+            moduledisplayOrder: 1,
+          },
+        },
+      ],
       {
-        $sort: {
-          'displayOrder': 1,
-          'moduledisplayOrder': 1,
-          'questiondisplayOrder': 1,
-        },
-      },
-    ]);
+        allowDiskUse: true,   // prevents memory cap errors on large datasets
+      }
+    );
 
-    const transformData = (data) => {
-      return data.map(item => {
-        let overallScoreHigh = item.overallScoreHigh || "0";
-        let overallScoreLow = item.overallScoreLow || "0";
-        let fluencyLevelHigh = item.fluencyLevelHigh || "0";
-        let fluencyLevelLow = item.fluencyLevelLow || "0";
-        let energyHigh = item.energyHigh || "0";
-        let energyLow = item.energyLow || "0";
-        let speechRateHigh = item.speechRateHigh || "0";
-        let speechRateLow = item.speechRateLow || "0";
-        let vocabularyRatingHigh = item.vocabularyRatingHigh || "0";
-        let vocabularyRatingLow = item.vocabularyRatingLow || "0";
-        let contentRelevanceRatingHigh = item.contentRelevanceRatingHigh || "0";
-        let contentRelevanceRatingLow = item.contentRelevanceRatingLow || "0";
-        if (item.attempt === 1) {
-          overallScoreLow = overallScoreHigh;
-          fluencyLevelLow = fluencyLevelHigh;
-          energyLow = energyHigh;
-          speechRateLow = speechRateHigh;
-          vocabularyRatingLow = vocabularyRatingHigh;
-          contentRelevanceRatingLow = contentRelevanceRatingHigh;
-        }
-        return {
-          firstName: item.firstName,
-          lastName: item.lastName,
-          email: item.email,
-          mobileNumber: item.mobileNumber,
-          gender: item.gender,
-          source: item.source,
-          status: item.unitName && item.moduleName && item.questionTitle ? "Started" : "Yet to start",
-          currentStage: item.displayOrder && item.moduledisplayOrder && item.questiondisplayOrder ? `Unit: ${item.displayOrder} Module: ${item.moduledisplayOrder} Question: ${item.questiondisplayOrder}` : "Yet to start",
-          college: item.college,
-          department: item.department,
-          course: item.course,
-          unitName: item.unitName || "Yet to start",
-          moduleName: item.moduleName || "Yet to start",
-          questionTitle: item.questionTitle || "Yet to start",
-          attempt: item.attempt || "0",
-          overallScoreHigh: overallScoreHigh,
-          overallScoreLow: overallScoreLow,
-          fluencyLevelHigh: fluencyLevelHigh,
-          fluencyLevelLow: fluencyLevelLow,
-          energyHigh: energyHigh,
-          energyLow: energyLow,
-          speechRateHigh: speechRateHigh,
-          speechRateLow: speechRateLow,
-          vocabularyRatingHigh: vocabularyRatingHigh,
-          vocabularyRatingLow: vocabularyRatingLow,
-          contentRelevanceRatingHigh: contentRelevanceRatingHigh,
-          contentRelevanceRatingLow: contentRelevanceRatingLow,
-        };
-      });
-    };
+    // ── 4. Transform (JS-side, resolve question details from pre-fetched map) ──
+    return data.map(item => {
+      const questionDetails = item.questionId
+        ? validQuestionMap.get(item.questionId.toString())
+        : null;
 
-    const transformedData = transformData(data);
-    return transformedData;
+      const questionTitle = (questionDetails as any)?.questionTitle ?? null;
+      const questiondisplayOrder = (questionDetails as any)?.displayOrder ?? null;
+
+      let { overallScoreHigh, overallScoreLow,
+        fluencyLevelHigh, fluencyLevelLow,
+        energyHigh, energyLow,
+        speechRateHigh, speechRateLow,
+        vocabularyRatingHigh, vocabularyRatingLow,
+        contentRelevanceRatingHigh, contentRelevanceRatingLow } = item;
+
+      // Default nulls to "0"
+      overallScoreHigh = overallScoreHigh ?? "0";
+      overallScoreLow = overallScoreLow ?? "0";
+      fluencyLevelHigh = fluencyLevelHigh ?? "0";
+      fluencyLevelLow = fluencyLevelLow ?? "0";
+      energyHigh = energyHigh ?? "0";
+      energyLow = energyLow ?? "0";
+      speechRateHigh = speechRateHigh ?? "0";
+      speechRateLow = speechRateLow ?? "0";
+      vocabularyRatingHigh = vocabularyRatingHigh ?? "0";
+      vocabularyRatingLow = vocabularyRatingLow ?? "0";
+      contentRelevanceRatingHigh = contentRelevanceRatingHigh ?? "0";
+      contentRelevanceRatingLow = contentRelevanceRatingLow ?? "0";
+
+      if (item.attempt === 1) {
+        overallScoreLow = overallScoreHigh;
+        fluencyLevelLow = fluencyLevelHigh;
+        energyLow = energyHigh;
+        speechRateLow = speechRateHigh;
+        vocabularyRatingLow = vocabularyRatingHigh;
+        contentRelevanceRatingLow = contentRelevanceRatingHigh;
+      }
+
+      return {
+        firstName: item.firstName,
+        lastName: item.lastName,
+        email: item.email,
+        mobileNumber: item.mobileNumber,
+        gender: item.gender,
+        source: item.source,
+        status: item.unitName && item.moduleName && questionTitle ? "Started" : "Yet to start",
+        currentStage: item.displayOrder && item.moduledisplayOrder && questiondisplayOrder
+          ? `Unit: ${item.displayOrder} Module: ${item.moduledisplayOrder} Question: ${questiondisplayOrder}`
+          : "Yet to start",
+        college: item.college,
+        department: item.department,
+        course: item.course,
+        unitName: item.unitName || "Yet to start",
+        moduleName: item.moduleName || "Yet to start",
+        questionTitle: questionTitle || "Yet to start",
+        attempt: item.attempt || "0",
+        overallScoreHigh, overallScoreLow,
+        fluencyLevelHigh, fluencyLevelLow,
+        energyHigh, energyLow,
+        speechRateHigh, speechRateLow,
+        vocabularyRatingHigh, vocabularyRatingLow,
+        contentRelevanceRatingHigh, contentRelevanceRatingLow,
+      };
+    });
   }
 
   async getUserSummaryReports(userId: any) {
